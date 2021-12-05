@@ -4,7 +4,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class AddressingTable {
     private Map<String, AddressingCollumn> map;
-    private ReentrantLock lock;
 
     static class AddressingCollumn {
         private String destination;
@@ -26,22 +25,12 @@ public class AddressingTable {
     }
 
     public String getNextIP(String destination) {
-        lock.lock();
-        try {
-            return map.get(destination).getNextIP();
-        } finally {
-            lock.unlock();
-        }
+        return map.get(destination).getNextIP();
     }
 
     public void addAddress(String destination, String nextIP) {
         AddressingCollumn ac = new AddressingCollumn(destination, nextIP);
-        lock.lock();
-        try {
-            map.put(destination, ac);
-        } finally {
-            lock.unlock();
-        }
+        map.put(destination, ac);
     }
 }
 
