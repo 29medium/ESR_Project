@@ -1,4 +1,5 @@
-package Node;
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 public class StreamingSender implements Runnable{
@@ -11,6 +12,12 @@ public class StreamingSender implements Runnable{
     }
 
     public void run() {
-        
+        try {
+            while (true) {
+                DatagramPacket dp = queue.remove();
+
+                ds.send(dp);
+            }
+        } catch (InterruptedException | IOException ignored) {}
     }
 }
