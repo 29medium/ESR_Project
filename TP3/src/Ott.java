@@ -19,7 +19,7 @@ public class Ott {
         DatagramSocket ds = new DatagramSocket(8888);
         ServerSocket ss = new ServerSocket(8080);
         PacketQueue queue = new PacketQueue();
-        String ip = Inet4Address.getLocalHost().getHostAddress();
+        //String ip = Inet4Address.getLocalHost().getHostAddress();
         Set<String> neighbours = new TreeSet<>();
         AddressingTable at = new AddressingTable();
 

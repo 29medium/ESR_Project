@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class StreamingReceiver implements Runnable{
                 DatagramPacket dp = new DatagramPacket(arr, arr.length);
                 ds.receive(dp);
 
-                System.out.println(Arrays.toString(arr));
+                System.out.println(new String(arr, StandardCharsets.UTF_8));
 
                 //tratar informação
                 //DatagramPacket newdp = new DatagramPacket(arr, arr.length);
