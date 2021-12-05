@@ -22,6 +22,7 @@ public class AddressingTable {
 
     public AddressingTable() {
         this.map = new HashMap<>();
+        this.lock = new ReentrantLock();
     }
 
     public String getNextIP(String destination) {
