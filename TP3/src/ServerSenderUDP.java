@@ -15,15 +15,15 @@ public class ServerSenderUDP implements Runnable{
     }
 
     public void run() {
-        try {
-            while (true) {
-                Packet p = queue.remove();
+        //try {
+            //while (true) {
+                //Packet p = queue.remove();
 
-                byte[] packet = p.toBytes();
-                DatagramPacket dp = new DatagramPacket(packet, packet.length, InetAddress.getByName(at.getNextIP("0.0.0.0")), 8888);
+                //byte[] packet = p.toBytes();
+                //DatagramPacket dp = new DatagramPacket(packet, packet.length, InetAddress.getByName(at.getNextIP("0.0.0.0")), 8888);
 
-                ds.send(dp);
-            }
-        } catch (InterruptedException | IOException ignored) {}
+                //ds.send(dp);
+            //}
+        //} catch (InterruptedException | IOException ignored) {}
     }
 }

@@ -18,7 +18,7 @@ public class OttSenderUDP implements Runnable{
         try {
             while (true) {
                 Packet p = queue.remove();
-                String nextIP = at.getNextIP(p.getDestination());
+                String nextIP = "";//at.getNextIP(p.getDestination());
                 byte[] packet = p.toBytes();
                 DatagramPacket dp = new DatagramPacket(packet, packet.length, InetAddress.getByName(nextIP), 8888);
 

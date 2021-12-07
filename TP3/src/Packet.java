@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class Packet {
     private String source;
     private String destination;
-    private int type; // 1 - ask for neighbours / 2 - neighbours / 3&4 - routes / 5 - ask for a file / 6 - send the file
+    private int type; // 1 - ask for neighbours / 2 - neighbours / 3 - tell neighbours / 4 - 3 response
     private byte[] data;
 
     public Packet(String source, String destination, int type, byte[] data) {

@@ -6,18 +6,19 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static java.lang.Thread.sleep;
 
 public class OttSenderTCP implements Runnable {
     private String ip;
     private String bootstrapperIP;
-    private Set<String> neighbours;
+    private AddressingTable at;
 
-    public OttSenderTCP(String ip, String bootstrapperIP, Set<String> neighbours) {
+    public OttSenderTCP(String ip, String bootstrapperIP, AddressingTable at) {
         this.ip = ip;
         this.bootstrapperIP = bootstrapperIP;
-        this.neighbours = neighbours;
+        this.at = at;
     }
 
     public void run() {
@@ -33,7 +34,7 @@ public class OttSenderTCP implements Runnable {
             Packet rp = new Packet(in.readAllBytes());
             if(rp.getType() == 2) {
                 String n = new String(rp.getData(), StandardCharsets.UTF_8);
-                neighbours.addAll(List.of(n.split(",")));
+                at.addAddress(new TreeSet<>(List.of(n.split(","))));
             }
 
             out.close();

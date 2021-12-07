@@ -1,20 +1,21 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class AddressingTable {
     private Map<String, AddressingCollumn> map;
 
     static class AddressingCollumn {
-        private String destination;
-        private final String nextIP;
+        private String ip;
+        private int status; //  0 - not active, 1 - active
 
-        public AddressingCollumn(String destination, String nextIP) {
-            this.destination = destination;
-            this.nextIP = nextIP;
+        public AddressingCollumn(String ip) {
+            this.ip = ip;
+            this.status = 0;
         }
 
-        public String getNextIP() {
-            return nextIP;
+        public void setStatus(int status) {
+            this.status = status;
         }
     }
 
@@ -22,13 +23,11 @@ public class AddressingTable {
         this.map = new HashMap<>();
     }
 
-    public String getNextIP(String destination) {
-        return map.get(destination).getNextIP();
-    }
-
-    public void addAddress(String destination, String nextIP) {
-        AddressingCollumn ac = new AddressingCollumn(destination, nextIP);
-        map.put(destination, ac);
+    public void addAddress(Set<String> neighbours) {
+        for (String n : neighbours) {
+            AddressingCollumn ac = new AddressingCollumn(n);
+            map.put(n, ac);
+        }
     }
 }
 
