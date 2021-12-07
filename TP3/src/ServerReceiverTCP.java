@@ -24,8 +24,10 @@ public class ServerReceiverTCP implements Runnable{
                 System.out.println("Aqui");
 
                 byte[] arr = new byte[4096];
-                in.read(arr);
-                Packet p = new Packet(arr);
+                int size = in.read(arr, 0, 4096);
+                byte[] content = new byte[size];
+                System.arraycopy(arr, 0, content, 0, size);
+                Packet p = new Packet(content);
 
                 if(p.getType() == 1) {
                     System.out.println("Aqui2");
