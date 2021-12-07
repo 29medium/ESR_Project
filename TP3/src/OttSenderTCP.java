@@ -29,17 +29,17 @@ public class OttSenderTCP implements Runnable {
 
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
             DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
-
+            System.out.println("Aqui");
             out.write(np.toBytes());
             out.flush();
-
+            System.out.println("Aqui2");
             Packet rp = new Packet(in.readAllBytes());
             if(rp.getType() == 2) {
                 String n = new String(rp.getData(), StandardCharsets.UTF_8);
                 at.addAddress(new TreeSet<>(List.of(n.split(","))));
             }
 
-            System.out.println("Aqui");
+            System.out.println("Aqui3");
 
             out.close();
             s.close();

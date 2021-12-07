@@ -21,10 +21,11 @@ public class ServerReceiverTCP implements Runnable{
                 Socket s = ss.accept();
                 DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
                 DataOutputStream out = new DataOutputStream(s.getOutputStream());
-
+                System.out.println("Aqui");
                 Packet p = new Packet(in.readAllBytes());
 
                 if(p.getType() == 1) {
+                    System.out.println("Aqui2");
                     String neighbours = bs.get(p.getSource());
 
                     Packet newp = new Packet(p.getDestination(), p.getSource(), 2, neighbours.getBytes(StandardCharsets.UTF_8));
@@ -33,7 +34,7 @@ public class ServerReceiverTCP implements Runnable{
                     out.flush();
                 }
 
-                System.out.println("Aqui");
+                System.out.println("Aqui3");
 
                 out.close();
                 in.close();
