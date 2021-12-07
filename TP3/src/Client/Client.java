@@ -1,3 +1,8 @@
+package Client;
+
+import Packet.PacketQueue;
+import Packet.Packet;
+
 import java.io.IOException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;

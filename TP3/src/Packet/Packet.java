@@ -1,3 +1,5 @@
+package Packet;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -35,7 +37,7 @@ public class Packet {
         this.data = newData;
     }
 
-    byte[] toBytes() throws UnknownHostException {
+    public byte[] toBytes() throws UnknownHostException {
         byte[] arr = new byte[12 + this.data.length];
         int pos = 0;
 

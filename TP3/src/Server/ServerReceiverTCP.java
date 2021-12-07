@@ -1,22 +1,24 @@
+package Server;
+
+import Packet.Packet;
+import Packet.PacketQueue;
+
 import java.io.BufferedInputStream;
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Set;
 
-public class OttReceiverTCP implements Runnable {
+public class ServerReceiverTCP implements Runnable{
     private ServerSocket ss;
     private PacketQueue queue;
-    private Set<String> neighbours;
+    private Bootstrapper bs;
 
-    public OttReceiverTCP(ServerSocket ss, PacketQueue queue, Set<String> neighbours) {
+    public ServerReceiverTCP(ServerSocket ss, PacketQueue queue, Bootstrapper bs) {
         this.ss = ss;
         this.queue = queue;
-        this.neighbours = neighbours;
+        this.bs = bs;
     }
 
     public void run() {
@@ -27,10 +29,11 @@ public class OttReceiverTCP implements Runnable {
 
                 Packet p = new Packet(in.readAllBytes());
 
-                if(p.getType() == 2) {
-                    String n = new String(p.getData(), StandardCharsets.UTF_8);
-                    neighbours.addAll(List.of(n.split(",")));
-                    System.out.println(neighbours);
+                if(p.getType() == 1) {
+                    String neighbours = bs.get(new String(p.getData(), StandardCharsets.UTF_8));
+
+                    Packet newp = new Packet(p.getDestination(), p.getSource(), 2, neighbours.getBytes(StandardCharsets.UTF_8));
+                    queue.add(newp);
                 }
 
                 in.close();
