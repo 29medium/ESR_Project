@@ -1,24 +1,15 @@
-package Ott;
-
-import Packet.Packet;
-import Packet.PacketQueue;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.Set;
+import java.nio.charset.StandardCharsets;
 
-public class OttReceiverUDP implements Runnable{
+public class ServerReceiverUDP implements Runnable{
     private DatagramSocket ds;
     private PacketQueue queue;
-    private Set<String> neighbours;
-    private AddressingTable at;
 
-    public OttReceiverUDP(DatagramSocket ds, PacketQueue queue, Set<String> neighbours, AddressingTable at) {
+    public ServerReceiverUDP(DatagramSocket ds, PacketQueue queue) {
         this.ds = ds;
         this.queue = queue;
-        this.neighbours = Set.copyOf(neighbours);
-        this.at = at;
     }
 
     public void run() {
@@ -32,7 +23,13 @@ public class OttReceiverUDP implements Runnable{
                 System.arraycopy(dp.getData(), 0, content, 0, dp.getLength());
                 Packet p = new Packet(content);
 
-                queue.add(p);
+                if(p.getType()==5) {
+                    String message = new String(p.getData(), StandardCharsets.UTF_8);
+                    System.out.println(message);
+                    message = "Response " + message;
+
+                    Packet newp = new Packet(p.getDestination(), p.getSource(), 6, message.getBytes(StandardCharsets.UTF_8));
+                }
             }
         } catch (IOException ignored) {}
     }

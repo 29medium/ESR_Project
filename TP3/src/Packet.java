@@ -1,5 +1,3 @@
-package Packet;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
