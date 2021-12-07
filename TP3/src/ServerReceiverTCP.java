@@ -27,13 +27,13 @@ public class ServerReceiverTCP implements Runnable{
                 if(p.getType() == 1) {
                     String neighbours = bs.get(p.getSource());
 
-                    System.out.println(neighbours);
-
                     Packet newp = new Packet(p.getDestination(), p.getSource(), 2, neighbours.getBytes(StandardCharsets.UTF_8));
 
                     out.write(newp.toBytes());
                     out.flush();
                 }
+
+                System.out.println("Aqui");
 
                 out.close();
                 in.close();
