@@ -4,7 +4,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class PacketQueue {
-    private LinkedList<DatagramPacket> packets;
+    private LinkedList<Packet> packets;
     private ReentrantLock lock;
     private Condition notEmpty;
 
@@ -14,7 +14,7 @@ public class PacketQueue {
         notEmpty = lock.newCondition();
     }
 
-    public void add(DatagramPacket packet) {
+    public void add(Packet packet) {
         lock.lock();
         try {
             packets.add(packet);
@@ -25,7 +25,7 @@ public class PacketQueue {
         }
     }
 
-    public DatagramPacket remove() throws InterruptedException {
+    public Packet remove() throws InterruptedException {
         lock.lock();
         try {
             while(packets.isEmpty())

@@ -1,22 +1,15 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Set;
 
-public class StreamingReceiver implements Runnable{
+public class ClientReceiverUDP implements Runnable{
     private DatagramSocket ds;
     private PacketQueue queue;
-    private Set<String> neighbours;
-    private AddressingTable at;
 
-    public StreamingReceiver(DatagramSocket ds, PacketQueue queue, Set<String> neighbours, AddressingTable at) {
+    public ClientReceiverUDP(DatagramSocket ds, PacketQueue queue) {
         this.ds = ds;
         this.queue = queue;
-        this.neighbours = Set.copyOf(neighbours);
-        this.at = at;
     }
 
     public void run() {
@@ -30,11 +23,9 @@ public class StreamingReceiver implements Runnable{
                 System.arraycopy(dp.getData(), 0, content, 0, dp.getLength());
                 Packet p = new Packet(content);
 
-                String nextIP = at.getNextIP(p.getDestination());
-
-                byte[] packet = p.toBytes();
-                DatagramPacket newdp = new DatagramPacket(packet, packet.length, InetAddress.getByName(nextIP), 8888);
-                queue.add(newdp);
+                if(p.getType()==6) {
+                    System.out.println(new String(p.getData(), StandardCharsets.UTF_8));
+                }
             }
         } catch (IOException ignored) {}
     }

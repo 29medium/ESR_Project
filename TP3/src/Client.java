@@ -4,17 +4,23 @@ import java.nio.charset.StandardCharsets;
 
 public class Client {
     public static void main(String[] args) throws IOException {
-        if(args.length!=1)
+        if(args.length!=2)
             return;
 
         String nodeIp = args[0];
+        String serverIp = args[1];
+        String ip = InetAddress.getLocalHost().getHostAddress();
         DatagramSocket ds = new DatagramSocket(8888);
 
-        String message = "Hello";
-        Packet p = new Packet("10.0.1.20", "10.0.2.10", message.getBytes(StandardCharsets.UTF_8));
-        byte[] content = p.toBytes();
-        DatagramPacket dp = new DatagramPacket(content, content.length, InetAddress.getByName(nodeIp), 8888);
+        PacketQueue queue = new PacketQueue();
 
-        ds.send(dp);
+        // Teste
+        queue.add(new Packet(ip, serverIp, 5, "Hello".getBytes(StandardCharsets.UTF_8)));
+
+        Thread sender = new Thread(new ClientSenderUDP(ds, queue, nodeIp));
+        Thread receiver = new Thread(new ClientReceiverUDP(ds, queue));
+
+        sender.start();
+        receiver.start();
     }
 }
