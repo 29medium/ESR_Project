@@ -33,7 +33,10 @@ public class OttSenderTCP implements Runnable {
             out.write(np.toBytes());
             out.flush();
             System.out.println("Aqui2");
-            Packet rp = new Packet(in.readAllBytes());
+
+            byte[] arr = new byte[4096];
+            in.read(arr);
+            Packet rp = new Packet(arr);
             if(rp.getType() == 2) {
                 String n = new String(rp.getData(), StandardCharsets.UTF_8);
                 at.addAddress(new TreeSet<>(List.of(n.split(","))));

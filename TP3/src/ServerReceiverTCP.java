@@ -22,7 +22,10 @@ public class ServerReceiverTCP implements Runnable{
                 DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
                 DataOutputStream out = new DataOutputStream(s.getOutputStream());
                 System.out.println("Aqui");
-                Packet p = new Packet(in.readAllBytes());
+
+                byte[] arr = new byte[4096];
+                in.read(arr);
+                Packet p = new Packet(arr);
 
                 if(p.getType() == 1) {
                     System.out.println("Aqui2");
