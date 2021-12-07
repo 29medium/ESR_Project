@@ -2,6 +2,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -23,8 +24,9 @@ public class OttSenderTCP implements Runnable {
 
     public void run() {
         try {
-            Packet np = new Packet(ip, bootstrapperIP, 1, null);
+            Packet np = new Packet(ip, bootstrapperIP, 1, " ".getBytes(StandardCharsets.UTF_8));
             Socket s = new Socket(np.getDestination(), 8080);
+
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
             DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
 

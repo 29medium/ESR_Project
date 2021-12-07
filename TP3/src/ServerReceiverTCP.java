@@ -25,7 +25,9 @@ public class ServerReceiverTCP implements Runnable{
                 Packet p = new Packet(in.readAllBytes());
 
                 if(p.getType() == 1) {
-                    String neighbours = bs.get(new String(p.getData(), StandardCharsets.UTF_8));
+                    String neighbours = bs.get(p.getSource());
+
+                    System.out.println(neighbours);
 
                     Packet newp = new Packet(p.getDestination(), p.getSource(), 2, neighbours.getBytes(StandardCharsets.UTF_8));
 
