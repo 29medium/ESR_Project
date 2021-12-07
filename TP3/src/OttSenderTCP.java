@@ -33,6 +33,8 @@ public class OttSenderTCP implements Runnable {
             out.write(np.toBytes());
             out.flush();
 
+            sleep(10000);
+
             Packet rp = new Packet(in.readAllBytes());
             if(rp.getType() == 2) {
                 String n = new String(rp.getData(), StandardCharsets.UTF_8);
@@ -43,6 +45,8 @@ public class OttSenderTCP implements Runnable {
             s.close();
 
             // Verificar se está vivo e rotas
-        } catch (IOException ignored) { }
+        } catch (IOException ignored) { } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
