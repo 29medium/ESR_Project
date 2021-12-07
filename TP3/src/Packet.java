@@ -1,6 +1,7 @@
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class Packet {
     private String source;
@@ -33,6 +34,8 @@ public class Packet {
         byte[] newData = new byte[content.length - pos];
         System.arraycopy(content, pos, newData, 0, content.length-pos);
         this.data = newData;
+
+        System.out.println(type + source + destination + new String(data, StandardCharsets.UTF_8));
     }
 
     public byte[] toBytes() throws UnknownHostException {
