@@ -20,7 +20,7 @@ public class Packet {
         byte[] aux = new byte[4];
         int pos = 0;
 
-        this.type = ByteBuffer.wrap(aux,pos,4).getInt();
+        this.type = ByteBuffer.wrap(content,pos,4).getInt();
         pos += 4;
 
         System.arraycopy(content, pos, aux, 0, 4);
