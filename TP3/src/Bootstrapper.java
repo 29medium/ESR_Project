@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static java.lang.Thread.sleep;
+
 class BootstrapperCollumn {
     private Set<String> neighbours;
     private boolean visited;
@@ -74,6 +76,7 @@ public class Bootstrapper {
             while (count_visits() != bootstrapper.size()) {
                 full.await();
             }
+            sleep(500);
         } finally {
             lock.unlock();
         }
