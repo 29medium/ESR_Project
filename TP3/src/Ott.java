@@ -5,27 +5,25 @@ import java.util.TreeSet;
 
 public class Ott {
     public static void main(String[] args) throws IOException {
-        if(args.length > 3 || args.length < 1) {
-            System.out.println("Wrong number of arguments");
-            return;
-        }
-
         String ip = InetAddress.getLocalHost().getHostAddress();
         ServerSocket ss = new ServerSocket(8080);
         AddressingTable at = new AddressingTable();
 
-        if(args[0].equals("-server")) {
+        if(args.length==1 && args[0].equals("-server")) {
             server(ip, ss, at, new Bootstrapper("../files/bootstrapper"));
-        } else {
+        } else if(args.length==2 && args[1].equals("-client")) {
             PacketQueue queueTCP = new PacketQueue();
 
-            if(args[1].equals("-client")) {
-                Thread client = new Thread(new Client(at, queueTCP, ip));
-
-                client.start();
-            }
+            Thread client = new Thread(new Client(at, queueTCP, ip));
+            client.start();
 
             ott(ip, ss, at, args[0], queueTCP);
+        } else if(args.length==1) {
+            PacketQueue queueTCP = new PacketQueue();
+
+            ott(ip, ss, at, args[0], queueTCP);
+        } else {
+            System.out.println("Wrong number of arguments");
         }
     }
 
