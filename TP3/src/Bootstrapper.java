@@ -39,16 +39,11 @@ public class Bootstrapper {
         File file = new File(path);
         Scanner s = new Scanner(file);
 
-        lock.lock();
-        try {
-            String[] arr;
-            while(s.hasNextLine()) {
-                arr = s.nextLine().split(":");
-                Set<String> neighbours = new TreeSet<>(List.of(arr[1].split(",")));
-                bootstrapper.put(arr[0], new BootstrapperCollumn(neighbours));
-            }
-        } finally {
-            lock.unlock();
+        String[] arr;
+        while(s.hasNextLine()) {
+            arr = s.nextLine().split(":");
+            Set<String> neighbours = new TreeSet<>(List.of(arr[1].split(",")));
+            bootstrapper.put(arr[0], new BootstrapperCollumn(neighbours));
         }
     }
 
