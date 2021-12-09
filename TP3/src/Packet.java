@@ -44,10 +44,12 @@ public class Packet {
 
     public byte[] toBytes() throws UnknownHostException {
         byte[] arr;
-        if(data != null)
+
+        if(this.data != null) {
             arr = new byte[12 + this.data.length];
-        else
+        } else {
             arr = new byte[12];
+        }
 
         int pos = 0;
 
