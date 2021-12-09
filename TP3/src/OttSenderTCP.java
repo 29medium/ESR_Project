@@ -38,6 +38,7 @@ public class OttSenderTCP implements Runnable {
 
             if(rp.getType()==1) {
                 String n = new String(rp.getData(), StandardCharsets.UTF_8);
+                System.out.println(n);
                 Set<String> neighbours = new TreeSet<>(List.of(n.split(",")));
                 at.addNeighbours(neighbours);
             }

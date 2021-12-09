@@ -32,8 +32,6 @@ public class AddressingTable {
 
     public AddressingTable() {
         this.map = new HashMap<>();
-        this.neighbours = null;
-        this.sender = null;
         this.hops = Integer.MAX_VALUE;
         this.clientStream = false;
         this.lock = new ReentrantLock();
@@ -42,7 +40,7 @@ public class AddressingTable {
     public void addNeighbours(Set<String> neighbours) {
         lock.lock();
         try {
-            this.neighbours = new TreeSet<>(neighbours);
+            this.neighbours = neighbours;
         } finally {
             lock.unlock();
         }
