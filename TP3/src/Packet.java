@@ -1,3 +1,6 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -6,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 public class Packet {
     private String source;
     private String destination;
-    private int type; // 1 - ask for neighbours / 2 - neighbours / 3 - tell neighbours / 4 - 3 response
+    private int type; // 1 - ask for neighbours (message and response) / 3 - tell neighbours / 4 - 3 response
     private byte[] data;
 
     public Packet(String source, String destination, int type, byte[] data) {
@@ -34,8 +37,6 @@ public class Packet {
         byte[] newData = new byte[content.length - pos];
         System.arraycopy(content, pos, newData, 0, content.length-pos);
         this.data = newData;
-
-        System.out.println(type + source + destination + new String(data, StandardCharsets.UTF_8));
     }
 
     public byte[] toBytes() throws UnknownHostException {
@@ -58,6 +59,20 @@ public class Packet {
         System.arraycopy(this.data,0,arr,pos,this.data.length);
 
         return arr;
+    }
+
+    public static Packet receive(DataInputStream in) throws IOException {
+        byte[] arr = new byte[4096];
+        int size = in.read(arr, 0, 4096);
+        byte[] content = new byte[size];
+        System.arraycopy(arr, 0, content, 0, size);
+
+        return new Packet(content);
+    }
+
+    public static void send(DataOutputStream out, Packet p) throws IOException {
+        out.write(p.toBytes());
+        out.flush();
     }
 
     public int getType() {

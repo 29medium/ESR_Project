@@ -2,53 +2,71 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static java.lang.Thread.sleep;
-
 public class OttSenderTCP implements Runnable {
     private String ip;
     private String bootstrapperIP;
     private AddressingTable at;
+    private PacketQueue queue;
 
-    public OttSenderTCP(String ip, String bootstrapperIP, AddressingTable at) {
+    public OttSenderTCP(String ip, String bootstrapperIP, AddressingTable at, PacketQueue queue) {
         this.ip = ip;
         this.bootstrapperIP = bootstrapperIP;
         this.at = at;
+        this.queue = queue;
     }
 
     public void run() {
         try {
-            Packet np = new Packet(ip, bootstrapperIP, 1, " ".getBytes(StandardCharsets.UTF_8));
-            Socket s = new Socket(np.getDestination(), 8080);
+            Packet p = new Packet(ip, bootstrapperIP, 1, " ".getBytes(StandardCharsets.UTF_8));
+            Socket s = new Socket(p.getDestination(), 8080);
 
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
             DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
 
-            out.write(np.toBytes());
-            out.flush();
+            Packet.send(out, p);
+            Packet rp = Packet.receive(in);
 
-            byte[] arr = new byte[4096];
-            int size = in.read(arr, 0, 4096);
-            byte[] content = new byte[size];
-            System.arraycopy(arr, 0, content, 0, size);
-            Packet rp = new Packet(content);
-
-            if(rp.getType() == 2) {
-                String n = new String(rp.getData(), StandardCharsets.UTF_8);
-                at.addAddress(new TreeSet<>(List.of(n.split(","))));
-            }
-
-
+            in.close();
             out.close();
             s.close();
 
-            // Verificar se está vivo e rotas
-        } catch (IOException ignored) { }
+            if(rp.getType()==1) {
+                String n = new String(rp.getData(), StandardCharsets.UTF_8);
+                Set<String> neighbours = new TreeSet<>(List.of(n.split(",")));
+                at.addNeighbours(neighbours);
+            }
+
+            while(true) {
+                p = queue.remove();
+
+                s = new Socket(p.getDestination(), 8080);
+                out = new DataOutputStream(s.getOutputStream());
+
+                Packet.send(out, p);
+
+                if(p.getType() == 2) {
+                    in = new DataInputStream(in);
+                    rp = Packet.receive(in);
+
+                    if(rp.getType() == 3) {
+                        at.addAddress(p.getSource());
+                    }
+
+                    in.close();
+                }
+
+                s.close();
+                out.close();
+
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

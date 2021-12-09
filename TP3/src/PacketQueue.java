@@ -35,13 +35,4 @@ public class PacketQueue {
             lock.unlock();
         }
     }
-
-    public boolean isEmpty() {
-        lock.lock();
-        try {
-            return packets.isEmpty();
-        } finally {
-            lock.unlock();
-        }
-    }
 }
