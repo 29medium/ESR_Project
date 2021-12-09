@@ -34,9 +34,13 @@ public class Packet {
         this.destination = InetAddress.getByAddress(aux).getHostAddress();
         pos += 4;
 
-        byte[] newData = new byte[content.length - pos];
-        System.arraycopy(content, pos, newData, 0, content.length-pos);
-        this.data = newData;
+        if(content.length == pos) {
+            this.data = null;
+        } else {
+            byte[] newData = new byte[content.length - pos];
+            System.arraycopy(content, pos, newData, 0, content.length - pos);
+            this.data = newData;
+        }
     }
 
     public byte[] toBytes() throws UnknownHostException {
@@ -56,7 +60,8 @@ public class Packet {
         System.arraycopy(destination,0,arr,pos,4);
         pos += 4;
 
-        System.arraycopy(this.data,0,arr,pos,this.data.length);
+        if(data != null)
+            System.arraycopy(this.data,0,arr,pos,this.data.length);
 
         return arr;
     }
