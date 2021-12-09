@@ -27,8 +27,6 @@ public class OttReceiverTCP implements Runnable {
 
                 Packet p = Packet.receive(in);
 
-                in.close();
-
                 if(p.getType() == 2) {
                     int hops = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
 
@@ -53,10 +51,6 @@ public class OttReceiverTCP implements Runnable {
                     } else {
                         Packet.send(out, new Packet(p.getDestination(), p.getSource(), 4, null));
                     }
-
-                    out.close();
-                    s.close();
-
                 } else if(p.getType() == 5) {
                     at.removeAddress(p.getSource());
                 } else if(p.getType() == 6) {
@@ -70,6 +64,10 @@ public class OttReceiverTCP implements Runnable {
                         queue.add(new Packet(ip, at.getSender(), 7, null));
                     }
                 }
+
+                in.close();
+                out.close();
+                s.close();
             }
         } catch (IOException e) {
             e.printStackTrace();

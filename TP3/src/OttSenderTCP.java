@@ -47,23 +47,20 @@ public class OttSenderTCP implements Runnable {
 
                 s = new Socket(p.getDestination(), 8080);
                 out = new DataOutputStream(s.getOutputStream());
+                in = new DataInputStream(new DataInputStream(s.getInputStream()));
 
                 Packet.send(out, p);
 
                 if(p.getType() == 2) {
-                    in = new DataInputStream(in);
                     rp = Packet.receive(in);
 
-                    if(rp.getType() == 3) {
+                    if(rp.getType() == 3)
                         at.addAddress(p.getSource());
-                    }
-
-                    in.close();
                 }
 
-                s.close();
+                in.close();
                 out.close();
-
+                s.close();
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

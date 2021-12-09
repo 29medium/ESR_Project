@@ -36,12 +36,10 @@ public class ServerSenderTCP implements Runnable{
                     if(p.getType()==2) {
                         Packet rp = Packet.receive(in);
 
-                        if(rp.getType() == 3) {
+                        if(rp.getType() == 3)
                             at.addAddress(n);
-                        }
                     }
 
-                    // falta por pacote a aceitar null
                     in.close();
                     out.close();
                     s.close();
