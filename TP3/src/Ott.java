@@ -10,7 +10,7 @@ public class Ott {
         AddressingTable at = new AddressingTable();
 
         if(args.length==1 && args[0].equals("-server")) {
-            server(ip, ss, at, new Bootstrapper("files/bootstrapper2"));
+            server(ip, ss, at, new Bootstrapper("../files/bootstrapper2"));
         } else if(args.length==2 && args[1].equals("-client")) {
             PacketQueue queueTCP = new PacketQueue();
 

@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
 public class Packet {
     private String source;
     private String destination;
-    private int type; // 1 - ask for neighbours (message and response) / 3 - tell neighbours / 4 - 3 response
+    private int type;
     private byte[] data;
 
     public Packet(String source, String destination, int type, byte[] data) {
@@ -44,7 +43,12 @@ public class Packet {
     }
 
     public byte[] toBytes() throws UnknownHostException {
-        byte[] arr = new byte[12 + this.data.length];
+        byte[] arr;
+        if(data != null)
+            arr = new byte[12 + this.data.length];
+        else
+            arr = new byte[12];
+
         int pos = 0;
 
         ByteBuffer byteBuffer = ByteBuffer.allocate(4);
