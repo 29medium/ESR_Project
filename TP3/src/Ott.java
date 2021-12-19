@@ -1,7 +1,6 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Scanner;
 import java.util.TreeSet;
@@ -15,7 +14,7 @@ public class Ott {
         if(args.length==1 && args[0].equals("-server")) {
             server(ip, ss, at, new Bootstrapper("../files/bootstrapper2"));
         } else if(args.length==2 && args[1].equals("-client")) {
-            client(ip, ss, at, args[0], new PacketQueue());
+            client(ip, ss, at, args[0], new PacketQueue(), new RTPqueue());
         } else if(args.length==1) {
             ott(ip, ss, at, args[0], new PacketQueue());
         } else {
@@ -55,17 +54,42 @@ public class Ott {
         receiverTCP.start();
     }
 
-    public static void client(String ip, ServerSocket ss, AddressingTable at, String bootstrapperIP, PacketQueue queueTCP) {
-        Thread clientStream = new Thread(new ClientStream(at));
-        clientStream.start();
-
-        Thread client = new Thread(new Client(at, queueTCP, ip));
-        client.start();
-
+    public static void client(String ip, ServerSocket ss, AddressingTable at, String bootstrapperIP, PacketQueue queueTCP, RTPqueue queueRTP) {
         Thread senderTCP = new Thread(new OttSenderTCP(ip, bootstrapperIP, at, queueTCP));
         Thread receiverTCP = new Thread(new OttReceiverTCP(ss, at, queueTCP, ip));
+        Thread clientStream = new Thread(new ClientStream(at, queueRTP));
 
         senderTCP.start();
         receiverTCP.start();
+        clientStream.start();
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+        try {
+            String line;
+            boolean stream;
+            int streamID = 1;
+
+            while((line = in.readLine())!= null) {
+                stream = at.isClientStream(streamID);
+                if(line.equals("y") && !stream) {
+                    if(!at.isStreaming(streamID)) {
+                        queueTCP.add(new Packet(ip, at.getSender(), 6, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
+                    }
+                    at.setClientStream(true, streamID);
+
+                    Thread display = new Thread(new ClientDisplay(at, queueRTP));
+                    display.start();
+                } else if(line.equals("n") && stream) {
+                    at.setClientStream(false, streamID);
+                    if(!at.isStreaming(streamID)) {
+                        queueTCP.add(new Packet(ip, at.getSender(), 7, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
