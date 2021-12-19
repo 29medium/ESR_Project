@@ -86,6 +86,33 @@ public class OttReceiverTCP implements Runnable {
 
                         System.out.println("Informa caminho que não quer receber stream " + streamID);
                     }
+                } else if(p.getType() == 8) {
+                    at.reset();
+
+                    Set<String> routes = at.getRoutes();
+                    Set<String> neighbours = at.getNeighbours();
+                    neighbours.remove(p.getSource());
+                    neighbours.removeAll(routes);
+
+                    for(String n : routes)
+                        queue.add(new Packet(ip, n, 11, null));
+
+                    if(neighbours.isEmpty())
+                        queue.add(new Packet(ip, new String(p.getData(), StandardCharsets.UTF_8), 10, null));
+
+                    for (String n : neighbours)
+                        queue.add(new Packet(ip, n, 10, null));
+                } else if(p.getType() == 9) {
+                    at.removeAddress(p.getSource());
+                } else if(p.getType() == 10) {
+                    queue.add(new Packet(ip, p.getSource(), 2, String.valueOf(at.getHops()).getBytes(StandardCharsets.UTF_8)));
+                } else if(p.getType() == 11) {
+                    at.reset();
+
+                    Set<String> routes = at.getRoutes();
+
+                    for(String n : routes)
+                        queue.add(new Packet(ip, n, 11, null));
                 }
 
                 in.close();

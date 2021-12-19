@@ -3,6 +3,7 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class Ott {
@@ -85,6 +86,12 @@ public class Ott {
                     if(!at.isStreaming(streamID)) {
                         queueTCP.add(new Packet(ip, at.getSender(), 7, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
                     }
+                } else if(line.equals("exit")) {
+                    Set<String> neighbours = at.getRoutes();
+                    for(String n : neighbours) {
+                        queueTCP.add(new Packet(ip, n, 8, at.getSender().getBytes(StandardCharsets.UTF_8)));
+                    }
+                    queueTCP.add(new Packet(ip, at.getSender(), 9, null));
                 }
             }
 

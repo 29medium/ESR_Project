@@ -52,6 +52,10 @@ public class AddressingTable {
                     res.add(entry.getKey());
             return res;
         }
+
+        public Set<String> getRoutes() {
+            return collumn.keySet();
+        }
     }
 
     public AddressingTable() {
@@ -183,6 +187,25 @@ public class AddressingTable {
         lock.lock();
         try {
             return table.get(streamID).getStreamIPs();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Set<String> getRoutes() {
+        lock.lock();
+        try {
+            return table.get(1).getRoutes();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void reset() {
+        lock.lock();
+        try {
+            this.hops = Integer.MAX_VALUE;
+            this.sender = null;
         } finally {
             lock.unlock();
         }
