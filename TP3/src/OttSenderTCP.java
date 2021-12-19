@@ -42,6 +42,7 @@ public class OttSenderTCP implements Runnable {
                 Set<String> neighbours = new TreeSet<>(List.of(args[1].split(",")));
                 at.addNeighbours(neighbours);
                 at.addStream(Integer.parseInt(args[0]));
+                System.out.println("Recebeu vizinhos: " + args[0]);
             }
 
             while(true) {
@@ -56,8 +57,11 @@ public class OttSenderTCP implements Runnable {
                 if(p.getType() == 2) {
                     rp = Packet.receive(in);
 
-                    if(rp.getType() == 3)
+                    if(rp.getType() == 3) {
                         at.addAddress(p.getSource());
+
+                        System.out.println("Adicionou nodo " + rp.getSource() + " à tabela de rotas");
+                    }
                 }
 
                 in.close();

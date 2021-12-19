@@ -33,11 +33,16 @@ public class ServerSenderTCP implements Runnable{
 
                     Packet.send(out, p);
 
+                    System.out.println("Enviou novo caminho com 0 hops ao nodo " + n);
+
                     if(p.getType()==2) {
                         Packet rp = Packet.receive(in);
 
-                        if(rp.getType() == 3)
+                        if(rp.getType() == 3) {
                             at.addAddress(n);
+
+                            System.out.println("Adicionou nodo " + rp.getSource() + " à tabela de rotas");
+                        }
                     }
 
                     in.close();

@@ -29,6 +29,7 @@ public class ServerReceiverTCP implements Runnable{
                 Packet p = Packet.receive(in);
 
                 if(p.getType() == 1) {
+                    System.out.println("Ott " + p.getSource() + " pediu vizinhos");
                     String data = nstreams + " " + bs.get(p.getSource());
                     Packet.send(out, new Packet(p.getDestination(), p.getSource(), 1, data.getBytes(StandardCharsets.UTF_8)));
                 } else if(p.getType() == 6) {
