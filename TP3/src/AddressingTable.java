@@ -1,39 +1,62 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
-class AddressingCollumn {
-    private String ip;
-    private boolean status;
-
-    public AddressingCollumn(String ip) {
-        this.ip = ip;
-        this.status = false;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-}
-
 public class AddressingTable {
+    private Map<Integer, AddressingCollumn> table;
     private Set<String> neighbours;
-    private Map<String, AddressingCollumn> map;
     private String sender;
     private int hops;
-    private boolean clientStream;
     private ReentrantLock lock;
 
+    static class AddressingCollumn {
+        private boolean clientStream;
+        private Map<String, Boolean> collumn;
+
+        AddressingCollumn() {
+            this.clientStream = false;
+            collumn = new HashMap<>();
+        }
+
+        public void addAddress(String ip) {
+            collumn.put(ip, false);
+        }
+
+        public void removeAddress(String ip) {
+            collumn.remove(ip);
+        }
+
+        public boolean isClientStream() {
+            return clientStream;
+        }
+
+        public void setClientStream(boolean clientStream) {
+            this.clientStream = clientStream;
+        }
+
+        private boolean isStatus(String ip) {
+            return collumn.get(ip);
+        }
+
+        public boolean isStreaming() {
+            return collumn.containsValue(true) || clientStream;
+        }
+
+        public void setStatus(String ip, boolean status) {
+            collumn.put(ip, status);
+        }
+
+        public Set<String> getStreamIPs() {
+            Set<String> res = new TreeSet<>();
+            for(Map.Entry<String, Boolean> entry : collumn.entrySet())
+                if(entry.getValue())
+                    res.add(entry.getKey());
+            return res;
+        }
+    }
+
     public AddressingTable() {
-        this.map = new HashMap<>();
+        this.table = new HashMap<>();
         this.hops = Integer.MAX_VALUE;
-        this.clientStream = false;
         this.lock = new ReentrantLock();
     }
 
@@ -55,10 +78,20 @@ public class AddressingTable {
         }
     }
 
+    public void addStream(int streamID) {
+        lock.lock();
+        try {
+            table.put(streamID, new AddressingCollumn());
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public void addAddress(String ip) {
         lock.lock();
         try {
-            map.put(ip, new AddressingCollumn(ip));
+            for(AddressingCollumn ac : table.values())
+                ac.addAddress(ip);
         } finally {
             lock.unlock();
         }
@@ -67,7 +100,8 @@ public class AddressingTable {
     public void removeAddress(String ip) {
         lock.lock();
         try {
-            map.remove(ip);
+            for(AddressingCollumn ac : table.values())
+                ac.removeAddress(ip);
         } finally {
             lock.unlock();
         }
@@ -109,37 +143,46 @@ public class AddressingTable {
         }
     }
 
-    public boolean isClientStream() {
+    public boolean isClientStream(int streamID) {
         lock.lock();
         try {
-            return clientStream;
+            return table.get(streamID).isClientStream();
         } finally {
             lock.unlock();
         }
     }
 
-    public void setClientStream(boolean clientStream) {
+    public void setClientStream(boolean clientStream, int streamID) {
         lock.lock();
         try {
-            this.clientStream = clientStream;
+            table.get(streamID).setClientStream(clientStream);
         } finally {
             lock.unlock();
         }
     }
 
-    public boolean isStreaming() {
+    public boolean isStreaming(int streamID) {
         lock.lock();
         try {
-            return map.values().stream().anyMatch(AddressingCollumn::isStatus) || clientStream;
+            return table.get(streamID).isStreaming();
         } finally {
             lock.unlock();
         }
     }
 
-    public void setStatus(String ip, boolean status) {
+    public void setStatus(String ip, boolean status, int streamID) {
         lock.lock();
         try {
-            map.get(ip).setStatus(status);
+            table.get(streamID).setStatus(ip, status);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Set<String> getStreamIPs(int streamID) {
+        lock.lock();
+        try {
+            return table.get(streamID).getStreamIPs();
         } finally {
             lock.unlock();
         }

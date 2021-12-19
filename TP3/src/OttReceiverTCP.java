@@ -54,14 +54,18 @@ public class OttReceiverTCP implements Runnable {
                 } else if(p.getType() == 5) {
                     at.removeAddress(p.getSource());
                 } else if(p.getType() == 6) {
-                    if(!at.isStreaming()) {
-                        queue.add(new Packet(ip, at.getSender(), 6, null));
+                    int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
+
+                    if(!at.isStreaming(streamID)) {
+                        queue.add(new Packet(ip, at.getSender(), 6, p.getData()));
                     }
-                    at.setStatus(p.getSource(), true);
+                    at.setStatus(p.getSource(), true, streamID);
                 } else if(p.getType() == 7) {
-                    at.setStatus(p.getSource(), false);
-                    if(!at.isStreaming()) {
-                        queue.add(new Packet(ip, at.getSender(), 7, null));
+                    int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
+
+                    at.setStatus(p.getSource(), false, streamID);
+                    if(!at.isStreaming(streamID)) {
+                        queue.add(new Packet(ip, at.getSender(), 7, p.getData()));
                     }
                 }
 

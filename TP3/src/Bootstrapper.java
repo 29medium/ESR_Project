@@ -6,32 +6,32 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Thread.sleep;
 
-class BootstrapperCollumn {
-    private Set<String> neighbours;
-    private boolean visited;
-
-    BootstrapperCollumn(Set<String> neighbours) {
-        this.neighbours = neighbours;
-        this.visited = false;
-    }
-
-    public boolean isVisited() {
-        return visited;
-    }
-
-    public void setVisited(boolean visited) {
-        this.visited = visited;
-    }
-
-    public Set<String> getNeighbours() {
-        return neighbours;
-    }
-}
-
 public class Bootstrapper {
     private Map<String, BootstrapperCollumn> bootstrapper;
     private ReentrantLock lock;
     private Condition full;
+
+    static class BootstrapperCollumn {
+        private Set<String> neighbours;
+        private boolean visited;
+
+        BootstrapperCollumn(Set<String> neighbours) {
+            this.neighbours = neighbours;
+            this.visited = false;
+        }
+
+        public boolean isVisited() {
+            return visited;
+        }
+
+        public void setVisited(boolean visited) {
+            this.visited = visited;
+        }
+
+        public Set<String> getNeighbours() {
+            return neighbours;
+        }
+    }
 
     public Bootstrapper(String path) throws FileNotFoundException {
         bootstrapper = new HashMap<>();

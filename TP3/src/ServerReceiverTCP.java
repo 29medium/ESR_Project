@@ -10,11 +10,13 @@ public class ServerReceiverTCP implements Runnable{
     private ServerSocket ss;
     private Bootstrapper bs;
     private AddressingTable at;
+    private int nstreams;
 
-    public ServerReceiverTCP(ServerSocket ss, Bootstrapper bs, AddressingTable at) {
+    public ServerReceiverTCP(ServerSocket ss, Bootstrapper bs, AddressingTable at, int nstreams) {
         this.ss = ss;
         this.bs = bs;
         this.at = at;
+        this.nstreams = nstreams;
     }
 
     public void run() {
@@ -27,11 +29,14 @@ public class ServerReceiverTCP implements Runnable{
                 Packet p = Packet.receive(in);
 
                 if(p.getType() == 1) {
-                    Packet.send(out, new Packet(p.getDestination(), p.getSource(), 1, bs.get(p.getSource()).getBytes(StandardCharsets.UTF_8)));
+                    String data = nstreams + " " + bs.get(p.getSource());
+                    Packet.send(out, new Packet(p.getDestination(), p.getSource(), 1, data.getBytes(StandardCharsets.UTF_8)));
                 } else if(p.getType() == 6) {
-                    at.setStatus(p.getSource(), true);
+                    int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
+                    at.setStatus(p.getSource(), true, streamID);
                 } else if(p.getType() == 7) {
-                    at.setStatus(p.getSource(), false);
+                    int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
+                    at.setStatus(p.getSource(), false, streamID);
                 }
 
                 out.close();
