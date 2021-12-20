@@ -28,7 +28,8 @@ public class OttReceiverTCP implements Runnable {
                 Packet p = Packet.receive(in);
 
                 if(p.getType() == 4) {
-                    queue.add(new Packet(ip, p.getSource(), 5, String.valueOf(at.getHops()).getBytes(StandardCharsets.UTF_8)));
+                    int hops = at.getHops() + 1;
+                    queue.add(new Packet(ip, p.getSource(), 5, String.valueOf(hops).getBytes(StandardCharsets.UTF_8)));
                 }
                 else if(p.getType() == 5) {
                     int hops = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));

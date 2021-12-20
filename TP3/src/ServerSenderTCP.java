@@ -30,11 +30,12 @@ public class ServerSenderTCP implements Runnable{
         while(true) {
             try {
                 if(Ott.changed) {
+                    System.out.println("Entrou");
                     Ott.changed = false;
 
                     Set<String> neighbours = at.getNeighbours();
                     for (String n : neighbours) {
-                        Packet p = new Packet(ip, n, 5, "0".getBytes(StandardCharsets.UTF_8));
+                        Packet p = new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8));
                         Socket s = new Socket(n, 8080);
 
                         DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
@@ -42,7 +43,7 @@ public class ServerSenderTCP implements Runnable{
 
                         Packet.send(out, p);
 
-                        System.out.println("Enviou novo caminho com 0 hops ao nodo " + n + "\n");
+                        System.out.println("Enviou novo caminho com 1 hops ao nodo " + n + "\n");
 
                         if (p.getType() == 5) {
                             Packet rp = Packet.receive(in);
