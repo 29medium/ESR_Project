@@ -33,10 +33,6 @@ public class AddressingTable {
             this.clientStream = clientStream;
         }
 
-        private boolean isStatus(String ip) {
-            return collumn.get(ip);
-        }
-
         public boolean isStreaming() {
             return collumn.containsValue(true) || clientStream;
         }
@@ -47,14 +43,18 @@ public class AddressingTable {
 
         public Set<String> getStreamIPs() {
             Set<String> res = new TreeSet<>();
-            for(Map.Entry<String, Boolean> entry : collumn.entrySet())
-                if(entry.getValue())
+            for (Map.Entry<String, Boolean> entry : collumn.entrySet())
+                if (entry.getValue())
                     res.add(entry.getKey());
             return res;
         }
 
         public Set<String> getRoutes() {
             return collumn.keySet();
+        }
+
+        public void reset() {
+            this.collumn = new HashMap<>();
         }
     }
 
@@ -76,7 +76,7 @@ public class AddressingTable {
     public Set<String> getNeighbours() {
         lock.lock();
         try {
-            return neighbours;
+            return new TreeSet<>(neighbours);
         } finally {
             lock.unlock();
         }
@@ -85,7 +85,8 @@ public class AddressingTable {
     public void addStream(int streamID) {
         lock.lock();
         try {
-            table.put(streamID, new AddressingCollumn());
+            for(int i=1; i<=streamID; i++)
+                table.put(i, new AddressingCollumn());
         } finally {
             lock.unlock();
         }
@@ -94,7 +95,7 @@ public class AddressingTable {
     public void addAddress(String ip) {
         lock.lock();
         try {
-            for(AddressingCollumn ac : table.values())
+            for (AddressingCollumn ac : table.values())
                 ac.addAddress(ip);
         } finally {
             lock.unlock();
@@ -104,7 +105,7 @@ public class AddressingTable {
     public void removeAddress(String ip) {
         lock.lock();
         try {
-            for(AddressingCollumn ac : table.values())
+            for (AddressingCollumn ac : table.values())
                 ac.removeAddress(ip);
         } finally {
             lock.unlock();
@@ -206,6 +207,19 @@ public class AddressingTable {
         try {
             this.hops = Integer.MAX_VALUE;
             this.sender = null;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void fullReset() {
+        lock.lock();
+        try {
+            this.hops = Integer.MAX_VALUE;
+            this.sender = null;
+            for(AddressingCollumn ac : table.values()) {
+                ac.reset();
+            }
         } finally {
             lock.unlock();
         }

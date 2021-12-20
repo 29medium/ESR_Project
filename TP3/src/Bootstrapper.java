@@ -73,7 +73,7 @@ public class Bootstrapper {
     public void full() throws InterruptedException {
         lock.lock();
         try {
-            while (count_visits() != bootstrapper.size()) {
+            while (count_visits() < (bootstrapper.size()/2)) {
                 full.await();
             }
             sleep(500);
