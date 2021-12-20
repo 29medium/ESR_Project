@@ -12,16 +12,11 @@ public class AddressingTable {
     private ReentrantLock lock;
 
     public AddressingTable() {
-    }
-
-    public AddressingTable(int numStreams) {
         this.table = new HashMap<>();
         this.hops = Integer.MAX_VALUE;
         this.lock = new ReentrantLock();
-        this.numStreams = numStreams;
+        this.numStreams = 0;
         this.isClientStream = new HashMap<>();
-        for(int i=1; i<=numStreams; i++)
-            isClientStream.put(i, false);
     }
 
     public void addNeighbours(Set<String> neighbours) {
@@ -37,6 +32,17 @@ public class AddressingTable {
         lock.lock();
         try {
             return new TreeSet<>(neighbours);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void setNumStreams(int numStreams) {
+        lock.lock();
+        try {
+            this.numStreams = numStreams;
+            for(int i=1; i<=numStreams; i++)
+                isClientStream.put(i, false);
         } finally {
             lock.unlock();
         }

@@ -16,7 +16,7 @@ public class Ott {
         AddressingTable at = new AddressingTable();
 
         if(args.length==1 && args[0].equals("-server")) {
-            server(ip, ss, new Bootstrapper("../files/bootstrapper2"));
+            server(ip, ss, at, new Bootstrapper("../files/bootstrapper2"));
         } else if(args.length==2 && args[1].equals("-client")) {
             client(ip, ss, at, args[0], new PacketQueue(), new RTPqueue());
         } else if(args.length==1) {
@@ -50,7 +50,7 @@ public class Ott {
         }
     }
 
-    public static void server(String ip, ServerSocket ss, Bootstrapper bs) throws FileNotFoundException {
+    public static void server(String ip, ServerSocket ss, AddressingTable at, Bootstrapper bs) throws FileNotFoundException {
         File file = new File("../files/movies");
         Scanner s = new Scanner(file);
         int nstreams = 0;
@@ -62,7 +62,7 @@ public class Ott {
             nstreams++;
         }
 
-        AddressingTable at = new AddressingTable(nstreams);
+        at.setNumStreams(nstreams);
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
 
         Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip));
