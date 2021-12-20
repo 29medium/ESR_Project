@@ -34,6 +34,7 @@ public class Ott {
 
         AddressingTable at = new AddressingTable(nstreams);
 
+        System.out.println("Aqui");
 
         //Thread ottStream = new Thread(new OttStream(at));
         //ottStream.start();
@@ -71,6 +72,8 @@ public class Ott {
 
         AddressingTable at = new AddressingTable(nstreams);
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
+
+        System.out.println("aqui");
 
         Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip));
         Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at, nstreams));
