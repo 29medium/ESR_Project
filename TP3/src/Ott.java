@@ -7,6 +7,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class Ott {
+    public static boolean isON = false;
+    public static boolean changed = false;
+
     public static void main(String[] args) throws IOException {
         String ip = InetAddress.getLocalHost().getHostAddress();
         ServerSocket ss = new ServerSocket(8080);
@@ -48,9 +51,6 @@ public class Ott {
     }
 
     public static void server(String ip, ServerSocket ss, AddressingTable at, Bootstrapper bs) throws FileNotFoundException {
-        Boolean isON = false;
-        Boolean changed = true;
-
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
 
         File file = new File("files/movies");
@@ -64,8 +64,8 @@ public class Ott {
             nstreams++;
         }
 
-        Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip, isON, changed));
-        Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at, nstreams, isON, changed));
+        Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip));
+        Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at, nstreams));
 
         senderTCP.start();
         receiverTCP.start();

@@ -11,26 +11,22 @@ public class ServerSenderTCP implements Runnable{
     private Bootstrapper bs;
     private AddressingTable at;
     private String ip;
-    private Boolean isON;
-    private Boolean changed;
 
-    public ServerSenderTCP(Bootstrapper bs, AddressingTable at, String ip, Boolean isON, Boolean changed) {
+    public ServerSenderTCP(Bootstrapper bs, AddressingTable at, String ip) {
         this.bs = bs;
         this.at = at;
         this.ip = ip;
-        this.isON = isON;
-        this.changed = changed;
     }
 
     public void run() {
         try {
             bs.full();
 
-            isON = true;
+            Ott.isON = true;
 
             while(true) {
-                if(changed) {
-                    changed = false;
+                if(Ott.changed) {
+                    Ott.changed = false;
 
                     Set<String> neighbours = at.getNeighbours();
                     for (String n : neighbours) {
