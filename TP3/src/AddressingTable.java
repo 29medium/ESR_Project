@@ -1,73 +1,33 @@
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class AddressingTable {
-    private Map<Integer, AddressingCollumn> table;
+    private Map<String, Map<Integer, Boolean>> table;
+    private Map<Integer, Boolean> isClientStream;
     private Set<String> neighbours;
     private String sender;
     private int hops;
+    private int numStreams;
     private ReentrantLock lock;
 
-    static class AddressingCollumn {
-        private boolean clientStream;
-        private Map<String, Boolean> collumn;
-
-        AddressingCollumn() {
-            this.clientStream = false;
-            collumn = new HashMap<>();
-        }
-
-        public void addAddress(String ip) {
-            collumn.put(ip, false);
-        }
-
-        public void removeAddress(String ip) {
-            collumn.remove(ip);
-        }
-
-        public boolean isClientStream() {
-            return clientStream;
-        }
-
-        public void setClientStream(boolean clientStream) {
-            this.clientStream = clientStream;
-        }
-
-        public boolean isStreaming() {
-            return collumn.containsValue(true) || clientStream;
-        }
-
-        public void setStatus(String ip, boolean status) {
-            collumn.put(ip, status);
-        }
-
-        public Set<String> getStreamIPs() {
-            Set<String> res = new TreeSet<>();
-            for (Map.Entry<String, Boolean> entry : collumn.entrySet())
-                if (entry.getValue())
-                    res.add(entry.getKey());
-            return res;
-        }
-
-        public Set<String> getRoutes() {
-            return collumn.keySet();
-        }
-
-        public void reset() {
-            this.collumn = new HashMap<>();
-        }
+    public AddressingTable() {
     }
 
-    public AddressingTable() {
+    public AddressingTable(int numStreams) {
         this.table = new HashMap<>();
         this.hops = Integer.MAX_VALUE;
         this.lock = new ReentrantLock();
+        this.numStreams = numStreams;
+        this.isClientStream = new HashMap<>();
+        for(int i=1; i<=numStreams; i++)
+            isClientStream.put(i, false);
     }
 
     public void addNeighbours(Set<String> neighbours) {
         lock.lock();
         try {
-            this.neighbours = neighbours;
+            this.neighbours = new TreeSet<>(neighbours);
         } finally {
             lock.unlock();
         }
@@ -82,21 +42,15 @@ public class AddressingTable {
         }
     }
 
-    public void addStream(int streamID) {
-        lock.lock();
-        try {
-            for(int i=1; i<=streamID; i++)
-                table.put(i, new AddressingCollumn());
-        } finally {
-            lock.unlock();
-        }
-    }
-
     public void addAddress(String ip) {
         lock.lock();
         try {
-            for (AddressingCollumn ac : table.values())
-                ac.addAddress(ip);
+            Map<Integer, Boolean> map = new HashMap<>();
+
+            for(int i=1; i<=numStreams; i++)
+                map.put(i, false);
+
+            table.put(ip, map);
         } finally {
             lock.unlock();
         }
@@ -105,8 +59,7 @@ public class AddressingTable {
     public void removeAddress(String ip) {
         lock.lock();
         try {
-            for (AddressingCollumn ac : table.values())
-                ac.removeAddress(ip);
+            table.remove(ip);
         } finally {
             lock.unlock();
         }
@@ -151,7 +104,7 @@ public class AddressingTable {
     public boolean isClientStream(int streamID) {
         lock.lock();
         try {
-            return table.get(streamID).isClientStream();
+            return isClientStream.get(streamID);
         } finally {
             lock.unlock();
         }
@@ -160,7 +113,7 @@ public class AddressingTable {
     public void setClientStream(boolean clientStream, int streamID) {
         lock.lock();
         try {
-            table.get(streamID).setClientStream(clientStream);
+            isClientStream.put(streamID, clientStream);
         } finally {
             lock.unlock();
         }
@@ -169,7 +122,7 @@ public class AddressingTable {
     public boolean isStreaming(int streamID) {
         lock.lock();
         try {
-            return table.get(streamID).isStreaming();
+            return table.values().stream().map(m -> m.get(streamID)).collect(Collectors.toSet()).contains(true) || isClientStream.get(streamID);
         } finally {
             lock.unlock();
         }
@@ -178,7 +131,7 @@ public class AddressingTable {
     public void setStatus(String ip, boolean status, int streamID) {
         lock.lock();
         try {
-            table.get(streamID).setStatus(ip, status);
+            table.get(ip).put(streamID, status);
         } finally {
             lock.unlock();
         }
@@ -187,7 +140,13 @@ public class AddressingTable {
     public Set<String> getStreamIPs(int streamID) {
         lock.lock();
         try {
-            return table.get(streamID).getStreamIPs();
+            Set<String> stream = new TreeSet<>();
+
+            for(Map.Entry<String, Map<Integer, Boolean>> m : table.entrySet())
+                if(m.getValue().get(streamID))
+                    stream.add(m.getKey());
+
+            return stream;
         } finally {
             lock.unlock();
         }
@@ -196,7 +155,7 @@ public class AddressingTable {
     public Set<String> getRoutes() {
         lock.lock();
         try {
-            return table.get(1).getRoutes();
+            return table.keySet();
         } finally {
             lock.unlock();
         }
@@ -211,18 +170,4 @@ public class AddressingTable {
             lock.unlock();
         }
     }
-
-    public void fullReset() {
-        lock.lock();
-        try {
-            this.hops = Integer.MAX_VALUE;
-            this.sender = null;
-            for(AddressingCollumn ac : table.values()) {
-                ac.reset();
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
 }
-

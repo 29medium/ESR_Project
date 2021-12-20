@@ -30,7 +30,6 @@ public class ServerSenderTCP implements Runnable{
         while(true) {
             try {
                 if(Ott.changed) {
-                    System.out.println("Entrou");
                     Ott.changed = false;
 
                     Set<String> neighbours = at.getNeighbours();
