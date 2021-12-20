@@ -40,7 +40,7 @@ public class OttSenderTCP implements Runnable {
                 String data = new String(rp.getData(), StandardCharsets.UTF_8);
                 String[] args = data.split(" ");
                 Set<String> neighbours = new TreeSet<>(List.of(args[1].split(",")));
-                at.setNumStreams(Integer.parseInt(args[0]));
+                //at.setNumStreams(Integer.parseInt(args[0]));
                 at.addNeighbours(neighbours);
                 System.out.println("Recebeu vizinhos: " + args[0] + "\n");
 

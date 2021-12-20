@@ -13,20 +13,28 @@ public class Ott {
     public static void main(String[] args) throws IOException {
         String ip = InetAddress.getLocalHost().getHostAddress();
         ServerSocket ss = new ServerSocket(8080);
-        AddressingTable at = new AddressingTable();
 
         if(args.length==1 && args[0].equals("-server")) {
-            server(ip, ss, at, new Bootstrapper("../files/bootstrapper2"));
+            server(ip, ss, new Bootstrapper("../files/bootstrapper2"));
         } else if(args.length==2 && args[1].equals("-client")) {
-            client(ip, ss, at, args[0], new PacketQueue(), new RTPqueue());
+            client(ip, ss, args[0], new PacketQueue(), new RTPqueue());
         } else if(args.length==1) {
-            ott(ip, ss, at, args[0], new PacketQueue());
+            ott(ip, ss, args[0], new PacketQueue());
         } else {
             System.out.println("Wrong number of arguments");
         }
     }
 
-    public static void ott(String ip, ServerSocket ss, AddressingTable at, String bootstrapperIP, PacketQueue queueTCP) throws IOException {
+    public static void ott(String ip, ServerSocket ss, String bootstrapperIP, PacketQueue queueTCP) throws IOException {
+        File file = new File("../files/movies");
+        Scanner s = new Scanner(file);
+        int nstreams = 0;
+        while(s.hasNextLine())
+            nstreams++;
+
+        AddressingTable at = new AddressingTable(nstreams);
+
+
         //Thread ottStream = new Thread(new OttStream(at));
         //ottStream.start();
 
@@ -50,11 +58,10 @@ public class Ott {
         }
     }
 
-    public static void server(String ip, ServerSocket ss, AddressingTable at, Bootstrapper bs) throws FileNotFoundException {
+    public static void server(String ip, ServerSocket ss, Bootstrapper bs) throws FileNotFoundException {
         File file = new File("../files/movies");
         Scanner s = new Scanner(file);
         int nstreams = 0;
-
         while(s.hasNextLine()) {
             String[] args = s.nextLine().split(" ");
             //Thread serverStream = new Thread(new ServerStream(Integer.parseInt(args[0]), args[1], at));
@@ -62,7 +69,7 @@ public class Ott {
             nstreams++;
         }
 
-        at.setNumStreams(nstreams);
+        AddressingTable at = new AddressingTable(nstreams);
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
 
         Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip));
@@ -72,7 +79,15 @@ public class Ott {
         receiverTCP.start();
     }
 
-    public static void client(String ip, ServerSocket ss, AddressingTable at, String bootstrapperIP, PacketQueue queueTCP, RTPqueue queueRTP) throws IOException {
+    public static void client(String ip, ServerSocket ss, String bootstrapperIP, PacketQueue queueTCP, RTPqueue queueRTP) throws IOException {
+        File file = new File("../files/movies");
+        Scanner s = new Scanner(file);
+        int nstreams = 0;
+        while(s.hasNextLine())
+            nstreams++;
+
+        AddressingTable at = new AddressingTable(nstreams);
+
         Thread senderTCP = new Thread(new OttSenderTCP(ip, bootstrapperIP, at, queueTCP));
         Thread receiverTCP = new Thread(new OttReceiverTCP(ss, at, queueTCP, ip));
         //Thread clientStream = new Thread(new ClientStream(at, queueRTP));
