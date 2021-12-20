@@ -42,7 +42,7 @@ public class OttSenderTCP implements Runnable {
                 Set<String> neighbours = new TreeSet<>(List.of(args[1].split(",")));
                 at.addNeighbours(neighbours);
                 at.addStream(Integer.parseInt(args[0]));
-                System.out.println("Recebeu vizinhos: " + args[0]);
+                System.out.println("Recebeu vizinhos: " + args[0] + "\n");
 
                 if(rp.getType() == 3) {
                     for(String n : neighbours) {
@@ -50,32 +50,37 @@ public class OttSenderTCP implements Runnable {
                     }
                 }
             }
+        } catch (IOException e) {
+            System.out.println("Falha na conexão\n");
+        }
 
-            while(true) {
-                p = queue.remove();
 
-                s = new Socket(p.getDestination(), 8080);
-                out = new DataOutputStream(s.getOutputStream());
-                in = new DataInputStream(new DataInputStream(s.getInputStream()));
+        while(true) {
+            try {
+                Packet p = queue.remove();
+
+                Socket s = new Socket(p.getDestination(), 8080);
+                DataOutputStream out = new DataOutputStream(s.getOutputStream());
+                DataInputStream in = new DataInputStream(new DataInputStream(s.getInputStream()));
 
                 Packet.send(out, p);
 
-                if(p.getType() == 5) {
-                    rp = Packet.receive(in);
+                if (p.getType() == 5) {
+                    Packet rp = Packet.receive(in);
 
-                    if(rp.getType() == 6) {
+                    if (rp.getType() == 6) {
                         at.addAddress(p.getSource());
 
-                        System.out.println("Adicionou nodo " + rp.getSource() + " à tabela de rotas");
+                        System.out.println("Adicionou nodo " + rp.getSource() + " à tabela de rotas\n");
                     }
                 }
 
                 in.close();
                 out.close();
                 s.close();
+            } catch (IOException | InterruptedException e) {
+                System.out.println("Falha na conexão\n");
             }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
         }
     }
 }

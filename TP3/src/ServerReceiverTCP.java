@@ -20,8 +20,8 @@ public class ServerReceiverTCP implements Runnable{
     }
 
     public void run() {
-        try {
-            while(true) {
+        while(true) {
+            try {
                 Socket s = ss.accept();
                 DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
                 DataOutputStream out = new DataOutputStream(s.getOutputStream());
@@ -29,7 +29,7 @@ public class ServerReceiverTCP implements Runnable{
                 Packet p = Packet.receive(in);
 
                 if(p.getType() == 1) {
-                    System.out.println("Ott " + p.getSource() + " pediu vizinhos");
+                    System.out.println("Ott " + p.getSource() + " pediu vizinhos\n");
                     String data = nstreams + " " + bs.get(p.getSource());
                     if(!Ott.isON) {
                         Packet.send(out, new Packet(p.getDestination(), p.getSource(), 2, data.getBytes(StandardCharsets.UTF_8)));
@@ -48,7 +48,9 @@ public class ServerReceiverTCP implements Runnable{
                 out.close();
                 in.close();
                 s.close();
+            } catch (IOException ignored) {
+                System.out.println("Falha na conexão\n");
             }
-        } catch (IOException ignored) {}
+        }
     }
 }

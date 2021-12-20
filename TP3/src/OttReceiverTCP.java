@@ -18,8 +18,8 @@ public class OttReceiverTCP implements Runnable {
     }
 
     public void run() {
-        try {
-            while(true) {
+        while(true) {
+            try {
                 Socket s = ss.accept();
 
                 DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
@@ -36,11 +36,11 @@ public class OttReceiverTCP implements Runnable {
                     if (hops < at.getHops()) {
                         String sender = at.getSender();
 
-                        System.out.println("Aceitou novo caminho com " + hops + " hops do nodo " + p.getSource());
+                        System.out.println("Aceitou novo caminho com " + hops + " hops do nodo " + p.getSource()+ "\n");
 
                         if (sender != null) {
                             queue.add(new Packet(ip, sender, 8, null));
-                            System.out.println("Informou antigo caminho que encontrou nova alternativa");
+                            System.out.println("Informou antigo caminho que encontrou nova alternativa\n");
                         }
 
                         at.setSender(p.getSource());
@@ -55,18 +55,18 @@ public class OttReceiverTCP implements Runnable {
                             if (!n.equals(p.getSource())) {
                                 queue.add(new Packet(ip, n, 5, String.valueOf(hops).getBytes(StandardCharsets.UTF_8)));
 
-                                System.out.println("Enviou novo caminho com " + hops + " hops ao nodo " + n);
+                                System.out.println("Enviou novo caminho com " + hops + " hops ao nodo " + n+ "\n");
                             }
 
                     } else {
                         Packet.send(out, new Packet(p.getDestination(), p.getSource(), 7, null));
 
-                        System.out.println("Rejeitou novo caminho com " + hops + " hops do nodo " + p.getSource());
+                        System.out.println("Rejeitou novo caminho com " + hops + " hops do nodo " + p.getSource()+ "\n");
                     }
                 } else if(p.getType() == 8) {
                     at.removeAddress(p.getSource());
 
-                    System.out.println("Caminho para o nodo " + p.getSource() + " removido");
+                    System.out.println("Caminho para o nodo " + p.getSource() + " removido\n");
 
                 } else if(p.getType() == 9) {
                     at.reset();
@@ -99,33 +99,33 @@ public class OttReceiverTCP implements Runnable {
                 } else if(p.getType() == 11) {
                     int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
 
-                    System.out.println("Nodo " + p.getSource() + " quer receber stream " + streamID);
+                    System.out.println("Nodo " + p.getSource() + " quer receber stream " + streamID+ "\n");
 
                     if(!at.isStreaming(streamID)) {
                         queue.add(new Packet(ip, at.getSender(), 11, p.getData()));
 
-                        System.out.println("Informa caminho que quer receber stream " + streamID);
+                        System.out.println("Informa caminho que quer receber stream " + streamID+ "\n");
                     }
                     at.setStatus(p.getSource(), true, streamID);
                 } else if(p.getType() == 12) {
                     int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
 
-                    System.out.println("Nodo " + p.getSource() + " não quer receber stream " + streamID);
+                    System.out.println("Nodo " + p.getSource() + " não quer receber stream " + streamID+ "\n");
 
                     at.setStatus(p.getSource(), false, streamID);
                     if(!at.isStreaming(streamID)) {
                         queue.add(new Packet(ip, at.getSender(), 12, p.getData()));
 
-                        System.out.println("Informa caminho que não quer receber stream " + streamID);
+                        System.out.println("Informa caminho que não quer receber stream " + streamID + "\n");
                     }
                 }
 
                 in.close();
                 out.close();
                 s.close();
+            } catch (IOException e) {
+                System.out.println("Falha na conexão\n");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

@@ -21,10 +21,14 @@ public class ServerSenderTCP implements Runnable{
     public void run() {
         try {
             bs.full();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-            Ott.isON = true;
+        Ott.isON = true;
 
-            while(true) {
+        while(true) {
+            try {
                 if(Ott.changed) {
                     Ott.changed = false;
 
@@ -38,7 +42,7 @@ public class ServerSenderTCP implements Runnable{
 
                         Packet.send(out, p);
 
-                        System.out.println("Enviou novo caminho com 0 hops ao nodo " + n);
+                        System.out.println("Enviou novo caminho com 0 hops ao nodo " + n + "\n");
 
                         if (p.getType() == 5) {
                             Packet rp = Packet.receive(in);
@@ -46,7 +50,7 @@ public class ServerSenderTCP implements Runnable{
                             if (rp.getType() ==6) {
                                 at.addAddress(n);
 
-                                System.out.println("Adicionou nodo " + rp.getSource() + " à tabela de rotas");
+                                System.out.println("Adicionou nodo " + rp.getSource() + " à tabela de rotas\n");
                             }
                         }
 
@@ -56,9 +60,12 @@ public class ServerSenderTCP implements Runnable{
                     }
                 }
                 Thread.sleep(20000);
+
+                System.out.println("Passaram 20 segundos\n");
+            } catch (InterruptedException | IOException e) {
+                System.out.println("Falha na conexão\n");
             }
-        } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
         }
+
     }
 }
