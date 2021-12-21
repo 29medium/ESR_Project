@@ -167,4 +167,15 @@ public class AddressingTable {
             lock.unlock();
         }
     }
+
+    public void fullReset() {
+        lock.lock();
+        try {
+            this.hops = Integer.MAX_VALUE;
+            this.sender = null;
+            this.table = new HashMap<>();
+        } finally {
+            lock.unlock();
+        }
+    }
 }

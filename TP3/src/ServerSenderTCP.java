@@ -36,6 +36,13 @@ public class ServerSenderTCP implements Runnable{
                     for (String n : neighbours) {
                         Socket s = new Socket(n, 8080);
 
+                        DataOutputStream out = new DataOutputStream(s.getOutputStream());
+                        Packet.send(out, new Packet(ip, n, 13, null));
+                    }
+
+                    for (String n : neighbours) {
+                        Socket s = new Socket(n, 8080);
+
                         DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
                         DataOutputStream out = new DataOutputStream(s.getOutputStream());
 
@@ -66,6 +73,10 @@ public class ServerSenderTCP implements Runnable{
                 System.out.println("Falha na conexão\n");
             }
         }
+
+    }
+
+    public void fload() {
 
     }
 }

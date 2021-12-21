@@ -42,6 +42,8 @@ public class ServerReceiverTCP implements Runnable{
                 } else if(p.getType() == 12) {
                     int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
                     at.setStatus(p.getSource(), false, streamID);
+                } else if(p.getType() == 14) {
+                    Ott.changed = true;
                 }
 
                 out.close();

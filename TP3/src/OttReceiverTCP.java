@@ -122,6 +122,15 @@ public class OttReceiverTCP implements Runnable {
 
                         System.out.println("Informa caminho que não quer receber stream " + streamID + "\n");
                     }
+                } else if(p.getType() == 13) {
+                    Set<String> routes = at.getRoutes();
+
+                    for(String n : routes)
+                        queue.add(new Packet(ip, n, 10, null));
+
+                    at.fullReset();
+                } else if(p.getType() == 14) {
+                    queue.add(new Packet(ip, at.getSender(), 14, null));
                 }
 
                 in.close();
