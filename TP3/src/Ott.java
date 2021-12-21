@@ -82,12 +82,11 @@ public class Ott {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;
-        boolean stream;
-        int streamID = 1;
+        int streamID;
 
         while((line = in.readLine())!= null) {
-            stream = at.isClientStream(streamID);
-            if(line.equals("y") && !stream) {
+            if(line.equals("1")) {
+                streamID = 1;
                 if(!at.isStreaming(streamID)) {
                     queueTCP.add(new Packet(ip, at.getSender(), 11, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
                 }
@@ -95,11 +94,16 @@ public class Ott {
 
                 Thread display = new Thread(new ClientDisplay(at, queueRTP));
                 display.start();
-            } else if(line.equals("n") && stream) {
-                at.setClientStream(false, streamID);
+            } else if(line.equals("2")) {
+                streamID = 2;
                 if(!at.isStreaming(streamID)) {
-                    queueTCP.add(new Packet(ip, at.getSender(), 12, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
+                    queueTCP.add(new Packet(ip, at.getSender(), 11, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
                 }
+                at.setClientStream(true, streamID);
+
+                Thread display = new Thread(new ClientDisplay(at, queueRTP));
+                display.start();
+
             } else if(line.equals("exit")) {
                 Set<String> neighbours = at.getRoutes();
                 for(String n : neighbours) {
@@ -107,6 +111,11 @@ public class Ott {
                 }
                 queueTCP.add(new Packet(ip, at.getSender(), 8, null));
             }
+            /*else if(line.equals("n") && stream) {
+                at.setClientStream(false, streamID);
+                if(!at.isStreaming(streamID)) {
+                    queueTCP.add(new Packet(ip, at.getSender(), 12, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
+                }*/
         }
     }
 
