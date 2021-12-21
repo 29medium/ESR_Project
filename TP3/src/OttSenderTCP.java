@@ -22,39 +22,6 @@ public class OttSenderTCP implements Runnable {
     }
 
     public void run() {
-        try {
-            Packet p = new Packet(ip, bootstrapperIP, 1, " ".getBytes(StandardCharsets.UTF_8));
-            Socket s = new Socket(p.getDestination(), 8080);
-
-            DataOutputStream out = new DataOutputStream(s.getOutputStream());
-            DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
-
-            Packet.send(out, p);
-            Packet rp = Packet.receive(in);
-
-            in.close();
-            out.close();
-            s.close();
-
-            if(rp.getType()==2 || rp.getType() == 3) {
-                String data = new String(rp.getData(), StandardCharsets.UTF_8);
-                String[] args = data.split(" ");
-                Set<String> neighbours = new TreeSet<>(List.of(args[1].split(",")));
-                //at.setNumStreams(Integer.parseInt(args[0]));
-                at.addNeighbours(neighbours);
-                System.out.println("Recebeu vizinhos: " + args[0] + "\n");
-
-                if(rp.getType() == 3) {
-                    for(String n : neighbours) {
-                        queue.add(new Packet(ip, n, 4, null));
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Falha na conexão\n");
-        }
-
-
         while(true) {
             try {
                 Packet p = queue.remove();
