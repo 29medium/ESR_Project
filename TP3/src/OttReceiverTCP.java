@@ -82,8 +82,10 @@ public class OttReceiverTCP implements Runnable {
                         queue.add(new Packet(ip, n, 10, null));
 
                     // Se não tiver vizinhos adiciona o sender do que saiu
+                    System.out.println(neighbours.isEmpty());
+
                     if(neighbours.isEmpty())
-                        queue.add(new Packet(ip, new String(p.getData(), StandardCharsets.UTF_8), 5, null));
+                        queue.add(new Packet(ip, new String(p.getData(), StandardCharsets.UTF_8), 4, null));
 
                     // Se tiver vizinhos pede para enviar os caminhos
                     else {
@@ -91,6 +93,7 @@ public class OttReceiverTCP implements Runnable {
                             queue.add(new Packet(ip, n, 4, null));
                     }
                 } else if(p.getType() == 10) {
+                    System.out.println("Limpei as minhas rotas");
                     Set<String> routes = at.getRoutes();
 
                     for(String n : routes)

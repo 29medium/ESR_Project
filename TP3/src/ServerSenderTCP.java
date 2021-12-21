@@ -34,12 +34,12 @@ public class ServerSenderTCP implements Runnable{
 
                     Set<String> neighbours = at.getNeighbours();
                     for (String n : neighbours) {
-                        Packet p = new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8));
                         Socket s = new Socket(n, 8080);
 
                         DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
                         DataOutputStream out = new DataOutputStream(s.getOutputStream());
 
+                        Packet p = new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8));
                         Packet.send(out, p);
 
                         System.out.println("Enviou novo caminho com 1 hops ao nodo " + n + "\n");

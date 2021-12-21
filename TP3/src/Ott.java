@@ -8,7 +8,7 @@ import java.util.TreeSet;
 
 public class Ott {
     public static boolean isON = false;
-    public static boolean changed = false;
+    public static boolean changed = true;
     public static int streams = 0;
 
     public static void main(String[] args) throws IOException {
