@@ -72,13 +72,6 @@ public class ClientDisplay implements Runnable {
         cTimer.setInitialDelay(0);
         cTimer.setCoalesce(true);
         cBuf = new byte[15000];
-
-        try {
-            RTPsocket = new DatagramSocket(RTP_RCV_PORT);
-            RTPsocket.setSoTimeout(5000);
-        } catch (SocketException e) {
-            System.out.println("Cliente: erro no socket: " + e.getMessage());
-        }
     }
 
     class playButtonListener implements ActionListener {

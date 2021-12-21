@@ -38,7 +38,7 @@ public class Ott {
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
 
         for(int i=1; i<=Ott.streams; i++) {
-            Thread serverStream = new Thread(new ServerStream(i, movies.get(i), at));
+            Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at));
             serverStream.start();
         }
 

@@ -4,13 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Set;
 
-
-public class ServerStream extends JFrame implements Runnable, ActionListener {
+public class ServerStream extends JFrame implements ActionListener {
     private JLabel label;
     private DatagramPacket senddp;
     private DatagramSocket RTPsocket;
@@ -26,16 +26,12 @@ public class ServerStream extends JFrame implements Runnable, ActionListener {
     private Timer sTimer;
     private byte[] sBuf;
 
-    private AddressingTable at;
-    private int streamID;
+    private static AddressingTable At;
+    private static int StreamID;
 
-    public ServerStream(int streamID, String name, AddressingTable at) {
-        VideoFileName = name;
-        this.at = at;
-        this.streamID = streamID;
-    }
+    public ServerStream() {
+        super("Server");
 
-    public void run() {
         sTimer = new Timer(FRAME_PERIOD, this); //init Timer para servidor
         sTimer.setInitialDelay(0);
         sTimer.setCoalesce(true);
@@ -59,6 +55,19 @@ public class ServerStream extends JFrame implements Runnable, ActionListener {
         sTimer.start();
     }
 
+    public static void execute(int streamID, String name, AddressingTable at) {
+        VideoFileName = name;
+        StreamID = streamID;
+        At = at;
+
+        File f = new File(VideoFileName);
+        if (f.exists()) {
+            ServerStream s = new ServerStream();
+
+        } else
+            System.out.println("Ficheiro de video não existe: " + VideoFileName);
+    }
+
     public void actionPerformed(ActionEvent e) {
 
         if (imagenb < VIDEO_LENGTH)
@@ -68,17 +77,18 @@ public class ServerStream extends JFrame implements Runnable, ActionListener {
             try {
                 int image_length = video.getnextframe(sBuf);
 
-                RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, streamID, sBuf, image_length);
+                RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, StreamID, sBuf, image_length);
 
                 int packet_length = rtp_packet.getlength();
 
                 byte[] packet_bits = new byte[packet_length];
                 rtp_packet.getpacket(packet_bits);
 
-                Set<String> streamIPs = at.getStreamIPs(streamID);
+                Set<String> streamIPs = At.getStreamIPs(StreamID);
                 for(String ip : streamIPs) {
                     senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(ip), RTP_dest_port);
                     RTPsocket.send(senddp);
+                    System.out.println("Send frame #"+imagenb);
                 }
 
                 rtp_packet.printheader();
