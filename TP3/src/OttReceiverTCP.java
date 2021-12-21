@@ -111,9 +111,14 @@ public class OttReceiverTCP implements Runnable {
                     if(!at.isStreaming(streamID)) {
                         queue.add(new Packet(ip, at.getSender(), 11, p.getData()));
                     }
+
+                    at.isOff();
+
                     at.setStatus(p.getSource(), true, streamID);
                 } else if(p.getType() == 12) {
                     int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
+
+                    at.isOff();
 
                     at.setStatus(p.getSource(), false, streamID);
                     if(!at.isStreaming(streamID)) {
@@ -142,6 +147,8 @@ public class OttReceiverTCP implements Runnable {
                 s.close();
             } catch (IOException e) {
                 //System.out.println("Falha na conexão\n");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
