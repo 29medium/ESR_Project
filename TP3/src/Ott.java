@@ -1,10 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class Ott {
     public static boolean isON = false;
@@ -29,16 +26,21 @@ public class Ott {
     public static void server(String ip, ServerSocket ss, Bootstrapper bs) throws FileNotFoundException {
         File file = new File("../files/movies");
         Scanner s = new Scanner(file);
+        Map<Integer, String> movies = new HashMap<>();
 
         while(s.hasNextLine()) {
             String[] args = s.nextLine().split(" ");
-            Thread serverStream = new Thread(new ServerStream(Integer.parseInt(args[0]), args[1], at));
-            serverStream.start();
+            movies.put(Integer.parseInt(args[0]), args[1]);
             Ott.streams++;
         }
 
         AddressingTable at = new AddressingTable(Ott.streams);
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
+
+        for(int i=1; i<=Ott.streams; i++) {
+            Thread serverStream = new Thread(new ServerStream(i, movies.get(i), at));
+            serverStream.start();
+        }
 
         Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip));
         Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at));
