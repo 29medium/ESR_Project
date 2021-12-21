@@ -218,12 +218,16 @@ public class AddressingTable {
             StringBuilder content = new StringBuilder("ip: " + ip + "\n");
 
             content.append("\nNeighbours:\n");
+            for(Map.Entry<Integer, Boolean> f : isClientStream.entrySet()) {
+                content.append(" - Stream ").append(f.getKey()).append(" :").append(f.getValue()).append("\n");
+            }
 
             for(Map.Entry<String, Map<Integer, Boolean>> e : table.entrySet()) {
                 content.append("\n").append(e.getKey()).append(":\n");
                 for(Map.Entry<Integer, Boolean> f : e.getValue().entrySet()) {
                     content.append(" - Stream ").append(f.getKey()).append(" :").append(f.getValue()).append("\n");
                 }
+                System.out.println("\n");
             }
 
             out.write(content.toString().getBytes(StandardCharsets.UTF_8));

@@ -159,6 +159,7 @@ public class Ott {
         //System.out.println("Recebeu vizinhos: " + args[0] + "\n");
 
         if(rp.getType() == 3) {
+            System.out.println("O SERVIDOR ESTÁ LIGADO");
             for(String n : neighbours) {
                 queue.add(new Packet(ip, n, 4, null));
             }
