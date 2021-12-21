@@ -9,30 +9,37 @@ import java.util.TreeSet;
 public class Ott {
     public static boolean isON = false;
     public static boolean changed = false;
+    public static boolean server = false;
+    public static int streams = 0;
 
     public static void main(String[] args) throws IOException {
         String ip = InetAddress.getLocalHost().getHostAddress();
         ServerSocket ss = new ServerSocket(8080);
 
         if(args.length==1 && args[0].equals("-server")) {
-            server(ip, ss, new Bootstrapper("../files/bootstrapper2"));
+            if(!Ott.server) {
+                server(ip, ss, new Bootstrapper("../files/bootstrapper2"));
+                Ott.server = true;
+            } else {
+                System.out.println("Server already connected");
+            }
         } else if(args.length==2 && args[1].equals("-client")) {
-            client(ip, ss, args[0], new PacketQueue(), new RTPqueue());
+            if(Ott.server)
+                client(ip, ss, args[0], new PacketQueue(), new RTPqueue());
+            else
+                System.out.println("No server connected");
         } else if(args.length==1) {
-            ott(ip, ss, args[0], new PacketQueue());
+            if(Ott.server)
+                ott(ip, ss, args[0], new PacketQueue());
+            else
+                System.out.println("No server connected");
         } else {
             System.out.println("Wrong number of arguments");
         }
     }
 
     public static void ott(String ip, ServerSocket ss, String bootstrapperIP, PacketQueue queueTCP) throws IOException {
-        File file = new File("../files/movies");
-        Scanner s = new Scanner(file);
-        int nstreams = 0;
-        while(s.hasNextLine())
-            nstreams++;
-
-        AddressingTable at = new AddressingTable(nstreams);
+        AddressingTable at = new AddressingTable(Ott.streams);
 
         System.out.println("Aqui");
 
@@ -62,34 +69,28 @@ public class Ott {
     public static void server(String ip, ServerSocket ss, Bootstrapper bs) throws FileNotFoundException {
         File file = new File("../files/movies");
         Scanner s = new Scanner(file);
-        int nstreams = 0;
+
         while(s.hasNextLine()) {
             String[] args = s.nextLine().split(" ");
             //Thread serverStream = new Thread(new ServerStream(Integer.parseInt(args[0]), args[1], at));
             //serverStream.start();
-            nstreams++;
+            Ott.streams++;
         }
 
-        AddressingTable at = new AddressingTable(nstreams);
+        AddressingTable at = new AddressingTable(Ott.streams);
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
 
         System.out.println("aqui");
 
         Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip));
-        Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at, nstreams));
+        Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at));
 
         senderTCP.start();
         receiverTCP.start();
     }
 
     public static void client(String ip, ServerSocket ss, String bootstrapperIP, PacketQueue queueTCP, RTPqueue queueRTP) throws IOException {
-        File file = new File("../files/movies");
-        Scanner s = new Scanner(file);
-        int nstreams = 0;
-        while(s.hasNextLine())
-            nstreams++;
-
-        AddressingTable at = new AddressingTable(nstreams);
+        AddressingTable at = new AddressingTable(Ott.streams);
 
         Thread senderTCP = new Thread(new OttSenderTCP(ip, bootstrapperIP, at, queueTCP));
         Thread receiverTCP = new Thread(new OttReceiverTCP(ss, at, queueTCP, ip));

@@ -10,13 +10,12 @@ public class ServerReceiverTCP implements Runnable{
     private ServerSocket ss;
     private Bootstrapper bs;
     private AddressingTable at;
-    private int nstreams;
 
-    public ServerReceiverTCP(ServerSocket ss, Bootstrapper bs, AddressingTable at, int nstreams) {
+
+    public ServerReceiverTCP(ServerSocket ss, Bootstrapper bs, AddressingTable at) {
         this.ss = ss;
         this.bs = bs;
         this.at = at;
-        this.nstreams = nstreams;
     }
 
     public void run() {
@@ -30,7 +29,7 @@ public class ServerReceiverTCP implements Runnable{
 
                 if(p.getType() == 1) {
                     System.out.println("Ott " + p.getSource() + " pediu vizinhos\n");
-                    String data = nstreams + " " + bs.get(p.getSource());
+                    String data = Ott.streams + " " + bs.get(p.getSource());
                     if(!Ott.isON) {
                         Packet.send(out, new Packet(p.getDestination(), p.getSource(), 2, data.getBytes(StandardCharsets.UTF_8)));
                     } else {
