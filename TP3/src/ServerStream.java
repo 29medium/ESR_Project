@@ -15,7 +15,6 @@ public class ServerStream extends JFrame implements ActionListener {
     private DatagramPacket senddp;
     private DatagramSocket RTPsocket;
     private int RTP_dest_port = 25000;
-    private static String VideoFileName;
 
     private int imagenb = 0;
     private VideoStream video;
@@ -26,11 +25,16 @@ public class ServerStream extends JFrame implements ActionListener {
     private Timer sTimer;
     private byte[] sBuf;
 
-    private static AddressingTable At;
-    private static int StreamID;
+    private AddressingTable at;
+    private int streamID;
+    private String videoFileName;
 
-    public ServerStream() {
+    public ServerStream(AddressingTable at, int streamID, String name) {
         super("Server");
+
+        this.at = at;
+        this.streamID = streamID;
+        this.videoFileName = name;
 
         sTimer = new Timer(FRAME_PERIOD, this); //init Timer para servidor
         sTimer.setInitialDelay(0);
@@ -39,7 +43,7 @@ public class ServerStream extends JFrame implements ActionListener {
 
         try {
             RTPsocket = new DatagramSocket();
-            video = new VideoStream(VideoFileName);
+            video = new VideoStream(videoFileName);
 
         } catch (Exception ignored) {}
 
@@ -56,16 +60,12 @@ public class ServerStream extends JFrame implements ActionListener {
     }
 
     public static void execute(int streamID, String name, AddressingTable at) {
-        VideoFileName = name;
-        StreamID = streamID;
-        At = at;
-
-        File f = new File(VideoFileName);
+        File f = new File(name);
         if (f.exists()) {
-            ServerStream s = new ServerStream();
+            ServerStream s = new ServerStream(at, streamID, name);
 
         } else
-            System.out.println("Ficheiro de video não existe: " + VideoFileName);
+            System.out.println("Ficheiro de video não existe: " + name);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -77,14 +77,14 @@ public class ServerStream extends JFrame implements ActionListener {
             try {
                 int image_length = video.getnextframe(sBuf);
 
-                RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, StreamID, sBuf, image_length);
+                RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, streamID, sBuf, image_length);
 
                 int packet_length = rtp_packet.getlength();
 
                 byte[] packet_bits = new byte[packet_length];
                 rtp_packet.getpacket(packet_bits);
 
-                Set<String> streamIPs = At.getStreamIPs(StreamID);
+                Set<String> streamIPs = at.getStreamIPs(streamID);
                 for(String ip : streamIPs) {
                     senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(ip), RTP_dest_port);
                     RTPsocket.send(senddp);
@@ -98,7 +98,7 @@ public class ServerStream extends JFrame implements ActionListener {
         else
         {
             try {
-                video = new VideoStream(VideoFileName);
+                video = new VideoStream(videoFileName);
                 imagenb = 0;
             } catch (Exception ex) {
                 ex.printStackTrace();

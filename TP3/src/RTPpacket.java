@@ -185,7 +185,8 @@ public class RTPpacket{
     public void printheader()
     {
         System.out.print("[RTP-Header] ");
-        System.out.println("Version: " + Version
+        System.out.println("Stream" + StreamID
+                + ", Version: " + Version
                 + ", Padding: " + Padding
                 + ", Extension: " + Extension
                 + ", CC: " + CC
