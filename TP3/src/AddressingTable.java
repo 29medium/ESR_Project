@@ -152,7 +152,11 @@ public class AddressingTable {
     public void setStatus(String ip, boolean status, int streamID) {
         lock.lock();
         try {
+            while(isOFF)
+                con.await();
             table.get(ip).put(streamID, status);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
