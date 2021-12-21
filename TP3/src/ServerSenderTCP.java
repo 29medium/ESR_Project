@@ -57,15 +57,11 @@ public class ServerSenderTCP implements Runnable{
                         Packet p = new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8));
                         Packet.send(out, p);
 
-                        System.out.println("Enviou novo caminho com 1 hops ao nodo " + n + "\n");
-
                         if (p.getType() == 5) {
                             Packet rp = Packet.receive(in);
 
                             if (rp.getType() ==6) {
                                 at.addAddress(n);
-
-                                System.out.println("Adicionou nodo " + rp.getSource() + " à tabela de rotas\n");
                             }
                         }
 
@@ -75,16 +71,10 @@ public class ServerSenderTCP implements Runnable{
                     }
                 }
                 Thread.sleep(20000);
-
-                System.out.println("Passaram 20 segundos\n");
             } catch (InterruptedException | IOException e) {
                 System.out.println("Falha na conexão\n");
             }
         }
-
-    }
-
-    public void fload() {
 
     }
 }

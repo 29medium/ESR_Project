@@ -1,3 +1,7 @@
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -6,15 +10,17 @@ public class AddressingTable {
     private Map<String, Map<Integer, Boolean>> table;
     private Map<Integer, Boolean> isClientStream;
     private Set<String> neighbours;
+    private String ip;
     private String sender;
     private int hops;
     private int numStreams;
     private ReentrantLock lock;
 
-    public AddressingTable(int numStreams) {
+    public AddressingTable(int numStreams, String ip) {
         this.table = new HashMap<>();
         this.hops = Integer.MAX_VALUE;
         this.lock = new ReentrantLock();
+        this.ip = ip;
         this.isClientStream = new HashMap<>();
         this.numStreams = numStreams;
         for(int i=1; i<=numStreams; i++)
@@ -194,6 +200,33 @@ public class AddressingTable {
             return numStreams;
         } finally {
             lock.unlock();
+        }
+    }
+
+    public void ping() throws FileNotFoundException {
+        lock.lock();
+        try {
+            String name = "../files/log-" + ip;
+
+            FileOutputStream out = new FileOutputStream(name);
+
+            StringBuilder content = new StringBuilder("ip: " + ip + "\n");
+
+            content.append("\nNeibours:\n");
+
+            for(Map.Entry<String, Map<Integer, Boolean>> e : table.entrySet()) {
+                content.append("\n").append(e.getKey()).append(":\n");
+                for(Map.Entry<Integer, Boolean> f : e.getValue().entrySet()) {
+                    content.append(" - Stream ").append(f.getKey()).append(" :").append(f.getValue()).append("\n");
+                }
+            }
+
+            out.write(content.toString().getBytes(StandardCharsets.UTF_8));
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            lock.lock();
         }
     }
 }

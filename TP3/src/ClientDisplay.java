@@ -14,21 +14,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 public class ClientDisplay implements Runnable {
-    private JFrame f = new JFrame("Cliente de Testes");
-    private JButton setupButton = new JButton("Setup");
+    private JFrame f = new JFrame("Cliente");
     private JButton playButton = new JButton("Play");
-    private JButton pauseButton = new JButton("Pause");
-    private JButton tearButton = new JButton("Teardown");
+    private JButton stopButton = new JButton("Stop");
     private JPanel mainPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
     private JLabel iconLabel = new JLabel();
     private ImageIcon icon;
-
-    private DatagramPacket rcvdp;
-    private DatagramPacket senddp;
-    private DatagramSocket RTPsocket;
-    private static int RTP_RCV_PORT = 25000;
-    private int RTP_dest_port = 25000;
 
     private Timer cTimer;
     private byte[] cBuf;
@@ -56,10 +48,10 @@ public class ClientDisplay implements Runnable {
 
         buttonPanel.setLayout(new GridLayout(1,0));
         buttonPanel.add(playButton);
-        buttonPanel.add(tearButton);
+        buttonPanel.add(stopButton);
 
         playButton.addActionListener(new playButtonListener());
-        tearButton.addActionListener(new tearButtonListener());
+        stopButton.addActionListener(new stopButtonListener());
 
         iconLabel.setIcon(null);
 
@@ -82,19 +74,19 @@ public class ClientDisplay implements Runnable {
     class playButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e){
 
-            System.out.println("Play Button pressed !");
-            //start the timers ...
+            //System.out.println("Play Button pressed !");
             cTimer.start();
         }
     }
 
 
-    class tearButtonListener implements ActionListener {
+    class stopButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e){
 
-            System.out.println("Teardown Button pressed !");
-            //stop the timer
+            //System.out.println("Teardown Button pressed !");
             cTimer.stop();
+
+            f.dispose();
 
             at.setClientStream(false, streamID);
             if(!at.isStreaming(streamID)) {

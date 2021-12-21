@@ -41,9 +41,9 @@ public class OttStream implements Runnable {
                     RTPsocket.send(senddp);
                 }
 
-                System.out.println("Got RTP packet with SeqNum # " + rtp_packet.getsequencenumber() + " TimeStamp " + rtp_packet.gettimestamp() + " ms, of type " + rtp_packet.getpayloadtype());
+                //System.out.println("Got RTP packet with SeqNum # " + rtp_packet.getsequencenumber() + " TimeStamp " + rtp_packet.gettimestamp() + " ms, of type " + rtp_packet.getpayloadtype());
 
-                rtp_packet.printheader();
+                //rtp_packet.printheader();
             }
         }
         catch (InterruptedIOException iioe){

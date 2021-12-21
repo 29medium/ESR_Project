@@ -38,8 +38,6 @@ public class OttReceiverTCP implements Runnable {
                     if (hops < at.getHops()) {
                         String sender = at.getSender();
 
-                        System.out.println("Aceitou novo caminho com " + hops + " hops do nodo " + p.getSource()+ "\n");
-
                         Map<Integer, Boolean> isClientStream = at.getIsClientStream();
 
                         if (sender != null) {
@@ -49,8 +47,6 @@ public class OttReceiverTCP implements Runnable {
                             }
 
                             queue.add(new Packet(ip, sender, 8, null));
-
-                            System.out.println("Informou antigo caminho que encontrou nova alternativa\n");
                         }
 
                         at.setSender(p.getSource());
@@ -69,20 +65,13 @@ public class OttReceiverTCP implements Runnable {
                         for (String n : neighbours)
                             if (!n.equals(p.getSource())) {
                                 queue.add(new Packet(ip, n, 5, String.valueOf(hops).getBytes(StandardCharsets.UTF_8)));
-
-                                System.out.println("Enviou novo caminho com " + hops + " hops ao nodo " + n+ "\n");
                             }
 
                     } else {
                         Packet.send(out, new Packet(p.getDestination(), p.getSource(), 7, null));
-
-                        System.out.println("Rejeitou novo caminho com " + hops + " hops do nodo " + p.getSource()+ "\n");
                     }
                 } else if(p.getType() == 8) {
                     at.removeAddress(p.getSource());
-
-                    System.out.println("Caminho para o nodo " + p.getSource() + " removido\n");
-
                 } else if(p.getType() == 9) {
                     at.reset();
 
@@ -110,7 +99,6 @@ public class OttReceiverTCP implements Runnable {
 
                     queue.add(new Packet(ip, at.getSender(), 14, null));
                 } else if(p.getType() == 10) {
-                    System.out.println("Limpei as minhas rotas");
                     Set<String> routes = at.getRoutes();
 
                     for(String n : routes)
@@ -120,24 +108,16 @@ public class OttReceiverTCP implements Runnable {
                 } else if(p.getType() == 11) {
                     int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
 
-                    System.out.println("Nodo " + p.getSource() + " quer receber stream " + streamID+ "\n");
-
                     if(!at.isStreaming(streamID)) {
                         queue.add(new Packet(ip, at.getSender(), 11, p.getData()));
-
-                        System.out.println("Informa caminho que quer receber stream " + streamID+ "\n");
                     }
                     at.setStatus(p.getSource(), true, streamID);
                 } else if(p.getType() == 12) {
                     int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
 
-                    System.out.println("Nodo " + p.getSource() + " não quer receber stream " + streamID+ "\n");
-
                     at.setStatus(p.getSource(), false, streamID);
                     if(!at.isStreaming(streamID)) {
                         queue.add(new Packet(ip, at.getSender(), 12, p.getData()));
-
-                        System.out.println("Informa caminho que não quer receber stream " + streamID + "\n");
                     }
                 } else if(p.getType() == 13) {
                     Set<String> routes = at.getRoutes();
@@ -148,6 +128,13 @@ public class OttReceiverTCP implements Runnable {
                     at.fullReset();
                 } else if(p.getType() == 14) {
                     queue.add(new Packet(ip, at.getSender(), 14, null));
+                } else if(p.getType() == 15) {
+                    at.ping();
+
+                    Set<String> routes = at.getRoutes();
+                    for(String r : routes) {
+                        queue.add(new Packet(ip, r, 15, null));
+                    }
                 }
 
                 in.close();

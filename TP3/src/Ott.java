@@ -23,7 +23,7 @@ public class Ott {
         }
     }
 
-    public static void server(String ip, ServerSocket ss, Bootstrapper bs) throws FileNotFoundException {
+    public static void server(String ip, ServerSocket ss, Bootstrapper bs) throws IOException {
         File file = new File("../files/movies");
         Scanner s = new Scanner(file);
         Map<Integer, String> movies = new HashMap<>();
@@ -34,7 +34,7 @@ public class Ott {
             Ott.streams++;
         }
 
-        AddressingTable at = new AddressingTable(Ott.streams);
+        AddressingTable at = new AddressingTable(Ott.streams, ip);
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
 
         Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip, movies));
@@ -42,6 +42,23 @@ public class Ott {
 
         senderTCP.start();
         receiverTCP.start();
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+
+        System.out.print(">> ");
+        while((line = in.readLine())!= null) {
+            if(line.equals("ping")) {
+                at.ping();
+                Set<String> routes = at.getRoutes();
+                for(String r : routes) {
+                    Socket ns = new Socket(r, 8080);
+                    DataOutputStream out = new DataOutputStream(ns.getOutputStream());
+                    Packet.send(out, new Packet(ip, r, 15, null));
+                }
+            }
+            System.out.println(">> ");
+        }
     }
 
     public static void ott(String ip, ServerSocket ss, String bootstrapperIP, PacketQueue queueTCP) throws IOException {
@@ -58,6 +75,7 @@ public class Ott {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;
 
+        System.out.print(">> ");
         while((line = in.readLine())!= null) {
             if(line.equals("exit")) {
                 Set<String> neighbours = at.getRoutes();
@@ -65,7 +83,10 @@ public class Ott {
                     queueTCP.add(new Packet(ip, n, 9, at.getSender().getBytes(StandardCharsets.UTF_8)));
                 }
                 queueTCP.add(new Packet(ip, at.getSender(), 8, null));
+            } else {
+                System.out.println("Invalid command");
             }
+            System.out.print(">> ");
         }
     }
 
@@ -84,6 +105,7 @@ public class Ott {
         String line;
         int streamID;
 
+        System.out.print(">> ");
         while((line = in.readLine())!= null) {
             if(lerInt(1, at.getNumStreams(), line)) {
                 streamID = Integer.parseInt(line);
@@ -100,7 +122,10 @@ public class Ott {
                     queueTCP.add(new Packet(ip, n, 9, at.getSender().getBytes(StandardCharsets.UTF_8)));
                 }
                 queueTCP.add(new Packet(ip, at.getSender(), 8, null));
+            } else {
+                System.out.println("Invalid command");
             }
+            System.out.print(">> ");
         }
     }
 
@@ -130,7 +155,7 @@ public class Ott {
         String data = new String(rp.getData(), StandardCharsets.UTF_8);
         String[] args = data.split(" ");
         Set<String> neighbours = new TreeSet<>(List.of(args[1].split(",")));
-        AddressingTable at = new AddressingTable(Integer.parseInt(args[0]));
+        AddressingTable at = new AddressingTable(Integer.parseInt(args[0]), ip);
         at.addNeighbours(neighbours);
         System.out.println("Recebeu vizinhos: " + args[0] + "\n");
 

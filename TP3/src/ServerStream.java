@@ -88,10 +88,10 @@ public class ServerStream extends JFrame implements ActionListener {
                 for(String ip : streamIPs) {
                     senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(ip), RTP_dest_port);
                     RTPsocket.send(senddp);
-                    System.out.println("Send frame #"+imagenb);
+                    //System.out.println("Send frame #"+imagenb);
                 }
 
-                rtp_packet.printheader();
+                //rtp_packet.printheader();
             }
             catch(Exception ignored){}
         }
