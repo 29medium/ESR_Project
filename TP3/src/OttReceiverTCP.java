@@ -126,7 +126,7 @@ public class OttReceiverTCP implements Runnable {
                     Set<String> routes = at.getRoutes();
 
                     for(String n : routes)
-                        queue.add(new Packet(ip, n, 10, null));
+                        queue.add(new Packet(ip, n, 13, null));
 
                     at.fullReset();
                 } else if(p.getType() == 14) {
