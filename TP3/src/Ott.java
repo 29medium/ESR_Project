@@ -32,8 +32,8 @@ public class Ott {
 
         while(s.hasNextLine()) {
             String[] args = s.nextLine().split(" ");
-            //Thread serverStream = new Thread(new ServerStream(Integer.parseInt(args[0]), args[1], at));
-            //serverStream.start();
+            Thread serverStream = new Thread(new ServerStream(Integer.parseInt(args[0]), args[1], at));
+            serverStream.start();
             Ott.streams++;
         }
 
@@ -50,14 +50,13 @@ public class Ott {
     public static void ott(String ip, ServerSocket ss, String bootstrapperIP, PacketQueue queueTCP) throws IOException {
         AddressingTable at = neighbours(queueTCP, ip, bootstrapperIP);
 
-        //Thread ottStream = new Thread(new OttStream(at));
-        //ottStream.start();
-
+        Thread ottStream = new Thread(new OttStream(at));
         Thread senderTCP = new Thread(new OttSenderTCP(ip, bootstrapperIP, at, queueTCP));
         Thread receiverTCP = new Thread(new OttReceiverTCP(ss, at, queueTCP, ip));
 
         senderTCP.start();
         receiverTCP.start();
+        ottStream.start();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;
@@ -78,11 +77,11 @@ public class Ott {
 
         Thread senderTCP = new Thread(new OttSenderTCP(ip, bootstrapperIP, at, queueTCP));
         Thread receiverTCP = new Thread(new OttReceiverTCP(ss, at, queueTCP, ip));
-        //Thread clientStream = new Thread(new ClientStream(at, queueRTP));
+        Thread clientStream = new Thread(new ClientStream(at, queueRTP));
 
         senderTCP.start();
         receiverTCP.start();
-        //clientStream.start();
+        clientStream.start();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;

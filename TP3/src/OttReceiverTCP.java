@@ -93,6 +93,8 @@ public class OttReceiverTCP implements Runnable {
                         for (String n : neighbours)
                             queue.add(new Packet(ip, n, 4, null));
                     }
+
+                    queue.add(new Packet(ip, at.getSender(), 14, null));
                 } else if(p.getType() == 10) {
                     System.out.println("Limpei as minhas rotas");
                     Set<String> routes = at.getRoutes();
