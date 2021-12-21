@@ -74,7 +74,6 @@ public class ClientDisplay implements Runnable {
     class playButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e){
 
-            //System.out.println("Play Button pressed !");
             cTimer.start();
         }
     }
@@ -83,7 +82,6 @@ public class ClientDisplay implements Runnable {
     class stopButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e){
 
-            //System.out.println("Teardown Button pressed !");
             cTimer.stop();
 
             f.dispose();

@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -208,11 +209,15 @@ public class AddressingTable {
         try {
             String name = "../files/log-" + ip;
 
+            File file = new File(name);
+            if(file.exists())
+                file.delete();
+
             FileOutputStream out = new FileOutputStream(name);
 
             StringBuilder content = new StringBuilder("ip: " + ip + "\n");
 
-            content.append("\nNeibours:\n");
+            content.append("\nNeighbours:\n");
 
             for(Map.Entry<String, Map<Integer, Boolean>> e : table.entrySet()) {
                 content.append("\n").append(e.getKey()).append(":\n");
