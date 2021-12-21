@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -16,11 +17,15 @@ public class AddressingTable {
     private int hops;
     private int numStreams;
     private ReentrantLock lock;
+    private Condition con;
+    private boolean isOFF;
 
     public AddressingTable(int numStreams, String ip) {
         this.table = new HashMap<>();
         this.hops = Integer.MAX_VALUE;
         this.lock = new ReentrantLock();
+        this.con = lock.newCondition();
+        this.isOFF = false;
         this.ip = ip;
         this.isClientStream = new HashMap<>();
         this.numStreams = numStreams;
@@ -64,6 +69,9 @@ public class AddressingTable {
                 map.put(i, false);
 
             table.put(ip, map);
+
+            this.isOFF = false;
+            con.signal();
         } finally {
             lock.unlock();
         }
@@ -177,6 +185,7 @@ public class AddressingTable {
     public void reset() {
         lock.lock();
         try {
+            this.isOFF = true;
             this.hops = Integer.MAX_VALUE;
             this.sender = null;
         } finally {
@@ -187,6 +196,7 @@ public class AddressingTable {
     public void fullReset() {
         lock.lock();
         try {
+            this.isOFF = true;
             this.hops = Integer.MAX_VALUE;
             this.sender = null;
             this.table = new HashMap<>();
@@ -217,11 +227,11 @@ public class AddressingTable {
 
             StringBuilder content = new StringBuilder("ip: " + ip + "\n");
 
-            content.append("\nNeighbours:\n");
             for(Map.Entry<Integer, Boolean> f : isClientStream.entrySet()) {
                 content.append(" - Stream ").append(f.getKey()).append(" :").append(f.getValue()).append("\n");
             }
 
+            content.append("\nNeighbours:\n");
             for(Map.Entry<String, Map<Integer, Boolean>> e : table.entrySet()) {
                 content.append("\n").append(e.getKey()).append(":\n");
                 for(Map.Entry<Integer, Boolean> f : e.getValue().entrySet()) {
@@ -236,6 +246,16 @@ public class AddressingTable {
             e.printStackTrace();
         } finally {
             lock.lock();
+        }
+    }
+
+    public void isOff() throws InterruptedException {
+        lock.lock();
+        try {
+            while(isOFF)
+                con.await();
+        } finally {
+            lock.unlock();
         }
     }
 }

@@ -109,13 +109,17 @@ public class Ott {
         while((line = in.readLine())!= null) {
             if(lerInt(1, at.getNumStreams(), line)) {
                 streamID = Integer.parseInt(line);
-                if(!at.isStreaming(streamID)) {
-                    queueTCP.add(new Packet(ip, at.getSender(), 11, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
-                }
-                at.setClientStream(true, streamID);
+                if(!at.isClientStream(streamID)) {
+                    if (!at.isStreaming(streamID)) {
+                        queueTCP.add(new Packet(ip, at.getSender(), 11, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
+                    }
+                    at.setClientStream(true, streamID);
 
-                Thread display = new Thread(new ClientDisplay(at, queueRTP, queueTCP, streamID, ip));
-                display.start();
+                    Thread display = new Thread(new ClientDisplay(at, queueRTP, queueTCP, streamID, ip));
+                    display.start();
+                } else {
+                    System.out.println("Stream já está a ser transmitida");
+                }
             } else if(line.equals("exit")) {
                 Set<String> neighbours = at.getRoutes();
                 for(String n : neighbours) {
@@ -156,10 +160,8 @@ public class Ott {
         Set<String> neighbours = new TreeSet<>(List.of(args[1].split(",")));
         AddressingTable at = new AddressingTable(Integer.parseInt(args[0]), ip);
         at.addNeighbours(neighbours);
-        //System.out.println("Recebeu vizinhos: " + args[0] + "\n");
 
         if(rp.getType() == 3) {
-            System.out.println("O SERVIDOR ESTÁ LIGADO");
             for(String n : neighbours) {
                 queue.add(new Packet(ip, n, 4, null));
             }

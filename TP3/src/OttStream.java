@@ -35,6 +35,8 @@ public class OttStream implements Runnable {
 
                 RTPpacket rtp_packet = new RTPpacket(rcvdp.getData(), rcvdp.getLength());
 
+                at.isOff();
+
                 Set<String> streamIPs = at.getStreamIPs(rtp_packet.StreamID);
                 for (String ip : streamIPs) {
                     senddp = new DatagramPacket(rcvdp.getData(), rcvdp.getData().length, InetAddress.getByName(ip), RTP_dest_port);
@@ -51,6 +53,8 @@ public class OttStream implements Runnable {
         }
         catch (IOException ioe) {
             System.out.println("Exception caught: "+ioe);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

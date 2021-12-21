@@ -62,8 +62,7 @@ public class ServerStream extends JFrame implements ActionListener {
     public static void execute(int streamID, String name, AddressingTable at) {
         File f = new File(name);
         if (f.exists()) {
-            ServerStream s = new ServerStream(at, streamID, name);
-
+            new ServerStream(at, streamID, name);
         } else
             System.out.println("Ficheiro de video não existe: " + name);
     }
@@ -83,6 +82,8 @@ public class ServerStream extends JFrame implements ActionListener {
 
                 byte[] packet_bits = new byte[packet_length];
                 rtp_packet.getpacket(packet_bits);
+
+                at.isOff();
 
                 Set<String> streamIPs = at.getStreamIPs(streamID);
                 for(String ip : streamIPs) {
