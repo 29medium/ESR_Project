@@ -35,7 +35,9 @@ public class OttSenderTCP implements Runnable {
                 in.close();
                 out.close();
                 s.close();
-            } catch (IOException | InterruptedException ignored) {}
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

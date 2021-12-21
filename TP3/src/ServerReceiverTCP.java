@@ -48,7 +48,9 @@ public class ServerReceiverTCP implements Runnable{
                 out.close();
                 in.close();
                 s.close();
-            } catch (IOException ignored) {}
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
