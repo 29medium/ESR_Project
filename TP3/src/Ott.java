@@ -110,7 +110,7 @@ public class Ott {
             if(lerInt(1, at.getNumStreams(), line)) {
                 streamID = Integer.parseInt(line);
                 if(!at.isClientStream(streamID)) {
-                    if (!at.isStreaming(streamID)) {
+                    if (at.isNotStreaming(streamID)) {
                         queueTCP.add(new Packet(ip, at.getSender(), 11, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
                     }
                     at.setClientStream(true, streamID);

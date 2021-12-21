@@ -1,7 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;import java.util.List;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,7 +52,7 @@ public class OttReceiverTCP implements Runnable {
                         at.setSender(p.getSource());
                         at.setHops(hops);
 
-                        Packet.send(out, new Packet(p.getDestination(), p.getSource(), 6, null));
+                        queue.add(new Packet(p.getDestination(), p.getSource(), 6, null));
 
                         for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
                             if(e.getValue())
@@ -68,8 +68,11 @@ public class OttReceiverTCP implements Runnable {
                             }
 
                     } else {
-                        Packet.send(out, new Packet(p.getDestination(), p.getSource(), 7, null));
+                        queue.add( new Packet(p.getDestination(), p.getSource(), 7, null));
                     }
+
+                } else if (p.getType() == 6) {
+                    at.addAddress(p.getSource());
                 } else if(p.getType() == 8) {
                     at.removeAddress(p.getSource());
                 } else if(p.getType() == 9) {
@@ -108,7 +111,7 @@ public class OttReceiverTCP implements Runnable {
                 } else if(p.getType() == 11) {
                     int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
 
-                    if(!at.isStreaming(streamID)) {
+                    if(at.isNotStreaming(streamID)) {
                         queue.add(new Packet(ip, at.getSender(), 11, p.getData()));
                     }
 
@@ -117,7 +120,7 @@ public class OttReceiverTCP implements Runnable {
                     int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
 
                     at.setStatus(p.getSource(), false, streamID);
-                    if(!at.isStreaming(streamID)) {
+                    if(at.isNotStreaming(streamID)) {
                         queue.add(new Packet(ip, at.getSender(), 12, p.getData()));
                     }
                 } else if(p.getType() == 13) {
@@ -141,9 +144,7 @@ public class OttReceiverTCP implements Runnable {
                 in.close();
                 out.close();
                 s.close();
-            } catch (IOException e) {
-                //System.out.println("Falha na conexão\n");
-            }
+            } catch (IOException e) {}
         }
     }
 }

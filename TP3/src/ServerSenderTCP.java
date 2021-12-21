@@ -71,9 +71,7 @@ public class ServerSenderTCP implements Runnable{
                     }
                 }
                 Thread.sleep(20000);
-            } catch (InterruptedException | IOException e) {
-                //System.out.println("Falha na conexão\n");
-            }
+            } catch (InterruptedException | IOException ignored) {}
         }
 
     }

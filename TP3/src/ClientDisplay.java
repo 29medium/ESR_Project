@@ -4,14 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
 
 public class ClientDisplay implements Runnable {
     private JFrame f = new JFrame("Cliente");
@@ -87,7 +80,7 @@ public class ClientDisplay implements Runnable {
             f.dispose();
 
             at.setClientStream(false, streamID);
-            if(!at.isStreaming(streamID)) {
+            if(at.isNotStreaming(streamID)) {
                 queueTCP.add(new Packet(ip, at.getSender(), 12, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
             }
         }

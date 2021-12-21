@@ -32,20 +32,10 @@ public class OttSenderTCP implements Runnable {
 
                 Packet.send(out, p);
 
-                if (p.getType() == 5) {
-                    Packet rp = Packet.receive(in);
-
-                    if (rp.getType() == 6) {
-                        at.addAddress(rp.getSource());
-                    }
-                }
-
                 in.close();
                 out.close();
                 s.close();
-            } catch (IOException | InterruptedException e) {
-                //System.out.println("Falha na conexão\n");
-            }
+            } catch (IOException | InterruptedException ignored) {}
         }
     }
 }
