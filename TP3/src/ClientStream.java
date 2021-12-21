@@ -13,7 +13,6 @@ public class ClientStream implements Runnable{
     private static int RTP_RCV_PORT = 25000;
     private int RTP_dest_port = 25000;
 
-    private Timer cTimer;
     private byte[] cBuf;
 
     private AddressingTable at;
@@ -28,9 +27,10 @@ public class ClientStream implements Runnable{
 
         try {
             RTPsocket = new DatagramSocket(RTP_RCV_PORT);
-            RTPsocket.setSoTimeout(5000);
+            //RTPsocket.setSoTimeout(5000);
 
             while(true) {
+                cBuf = new byte[15000];
                 rcvdp = new DatagramPacket(cBuf, cBuf.length);
 
                 RTPsocket.receive(rcvdp);
