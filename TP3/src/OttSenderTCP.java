@@ -36,7 +36,7 @@ public class OttSenderTCP implements Runnable {
                     Packet rp = Packet.receive(in);
 
                     if (rp.getType() == 6) {
-                        at.addAddress(p.getSource());
+                        at.addAddress(rp.getSource());
 
                         System.out.println("Adicionou nodo " + rp.getSource() + " à tabela de rotas\n");
                     }
