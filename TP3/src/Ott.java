@@ -24,14 +24,16 @@ public class Ott {
                 System.out.println("Server already connected");
             }
         } else if(args.length==2 && args[1].equals("-client")) {
-            if(Ott.server)
+            if(Ott.server) {
+                System.out.println("aqui");
                 client(ip, ss, args[0], new PacketQueue(), new RTPqueue());
-            else
+            } else
                 System.out.println("No server connected");
         } else if(args.length==1) {
-            if(Ott.server)
+            if(Ott.server) {
+                System.out.println("aqui");
                 ott(ip, ss, args[0], new PacketQueue());
-            else
+            } else
                 System.out.println("No server connected");
         } else {
             System.out.println("Wrong number of arguments");
@@ -40,8 +42,6 @@ public class Ott {
 
     public static void ott(String ip, ServerSocket ss, String bootstrapperIP, PacketQueue queueTCP) throws IOException {
         AddressingTable at = new AddressingTable(Ott.streams);
-
-        System.out.println("Aqui");
 
         //Thread ottStream = new Thread(new OttStream(at));
         //ottStream.start();
@@ -79,8 +79,6 @@ public class Ott {
 
         AddressingTable at = new AddressingTable(Ott.streams);
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
-
-        System.out.println("aqui");
 
         Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip));
         Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at));
