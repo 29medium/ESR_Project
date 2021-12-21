@@ -97,7 +97,12 @@ public class ServerStream extends JFrame implements ActionListener {
         }
         else
         {
-            imagenb = 0;
+            try {
+                video = new VideoStream(VideoFileName);
+                imagenb = 0;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }
