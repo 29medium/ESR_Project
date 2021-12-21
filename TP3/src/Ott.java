@@ -85,25 +85,15 @@ public class Ott {
         int streamID;
 
         while((line = in.readLine())!= null) {
-            if(line.equals("1")) {
-                streamID = 1;
+            if(lerInt(1, at.getNumStreams(), line)) {
+                streamID = Integer.parseInt(line);
                 if(!at.isStreaming(streamID)) {
                     queueTCP.add(new Packet(ip, at.getSender(), 11, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
                 }
                 at.setClientStream(true, streamID);
 
-                Thread display = new Thread(new ClientDisplay(at, queueRTP));
+                Thread display = new Thread(new ClientDisplay(at, queueRTP, queueTCP, streamID, ip));
                 display.start();
-            } else if(line.equals("2")) {
-                streamID = 2;
-                if(!at.isStreaming(streamID)) {
-                    queueTCP.add(new Packet(ip, at.getSender(), 11, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
-                }
-                at.setClientStream(true, streamID);
-
-                Thread display = new Thread(new ClientDisplay(at, queueRTP));
-                display.start();
-
             } else if(line.equals("exit")) {
                 Set<String> neighbours = at.getRoutes();
                 for(String n : neighbours) {
@@ -111,12 +101,15 @@ public class Ott {
                 }
                 queueTCP.add(new Packet(ip, at.getSender(), 8, null));
             }
-            /*else if(line.equals("n") && stream) {
-                at.setClientStream(false, streamID);
-                if(!at.isStreaming(streamID)) {
-                    queueTCP.add(new Packet(ip, at.getSender(), 12, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
-                }*/
         }
+    }
+
+    public static boolean lerInt(int min, int max, String msg) {
+        boolean flag = false;
+        for(int i=min; i<=max; i++)
+            if(msg.equals(String.valueOf(i)))
+                flag = true;
+        return flag;
     }
 
     public static AddressingTable neighbours(PacketQueue queue, String ip, String bootstrapperIP) throws IOException {

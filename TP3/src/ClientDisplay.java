@@ -10,6 +10,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 public class ClientDisplay implements Runnable {
@@ -34,10 +35,16 @@ public class ClientDisplay implements Runnable {
 
     private AddressingTable at;
     private RTPqueue queue;
+    private PacketQueue queueTCP;
+    private int streamID;
+    private String ip;
 
-    public ClientDisplay(AddressingTable at, RTPqueue queue) {
+    public ClientDisplay(AddressingTable at, RTPqueue queue, PacketQueue queueTCP, int streamID, String ip) {
         this.at = at;
         this.queue = queue;
+        this.queueTCP = queueTCP;
+        this.streamID = streamID;
+        this.ip = ip;
     }
 
     public void run() {
@@ -88,8 +95,11 @@ public class ClientDisplay implements Runnable {
             System.out.println("Teardown Button pressed !");
             //stop the timer
             cTimer.stop();
-            //exit
-            System.exit(0);
+
+            at.setClientStream(false, streamID);
+            if(!at.isStreaming(streamID)) {
+                queueTCP.add(new Packet(ip, at.getSender(), 12, String.valueOf(streamID).getBytes(StandardCharsets.UTF_8)));
+            }
         }
     }
 

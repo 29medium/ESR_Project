@@ -187,4 +187,13 @@ public class AddressingTable {
             lock.unlock();
         }
     }
+
+    public int getNumStreams() {
+        lock.lock();
+        try {
+            return numStreams;
+        } finally {
+            lock.unlock();
+        }
+    }
 }
