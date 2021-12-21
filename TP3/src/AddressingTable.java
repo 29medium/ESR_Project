@@ -25,7 +25,7 @@ public class AddressingTable {
         this.hops = Integer.MAX_VALUE;
         this.lock = new ReentrantLock();
         this.con = lock.newCondition();
-        this.isOFF = false;
+        this.isOFF = true;
         this.ip = ip;
         this.isClientStream = new HashMap<>();
         this.numStreams = numStreams;
@@ -71,7 +71,7 @@ public class AddressingTable {
             table.put(ip, map);
 
             this.isOFF = false;
-            con.signal();
+            con.signalAll();
         } finally {
             lock.unlock();
         }
