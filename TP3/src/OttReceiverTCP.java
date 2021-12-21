@@ -74,16 +74,17 @@ public class OttReceiverTCP implements Runnable {
 
                     Set<String> routes = at.getRoutes();
                     Set<String> neighbours = at.getNeighbours();
+                    System.out.println(neighbours);
                     neighbours.remove(p.getSource());
+                    System.out.println(neighbours);
                     neighbours.removeAll(routes);
+                    System.out.println(neighbours);
 
                     // Mandar limpar rotas
                     for(String n : routes)
                         queue.add(new Packet(ip, n, 10, null));
 
                     // Se não tiver vizinhos adiciona o sender do que saiu
-                    System.out.println(neighbours.isEmpty());
-
                     if(neighbours.isEmpty())
                         queue.add(new Packet(ip, new String(p.getData(), StandardCharsets.UTF_8), 4, null));
 
