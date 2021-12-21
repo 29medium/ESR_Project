@@ -37,12 +37,7 @@ public class Ott {
         AddressingTable at = new AddressingTable(Ott.streams);
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
 
-        for(int i=1; i<=Ott.streams; i++) {
-            Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at));
-            serverStream.start();
-        }
-
-        Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip));
+        Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip, movies));
         Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at));
 
         senderTCP.start();

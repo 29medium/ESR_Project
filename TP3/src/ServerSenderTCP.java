@@ -5,17 +5,20 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Set;
 
 public class ServerSenderTCP implements Runnable{
     private Bootstrapper bs;
     private AddressingTable at;
     private String ip;
+    private Map<Integer, String> movies;
 
-    public ServerSenderTCP(Bootstrapper bs, AddressingTable at, String ip) {
+    public ServerSenderTCP(Bootstrapper bs, AddressingTable at, String ip, Map<Integer, String> movies) {
         this.bs = bs;
         this.at = at;
         this.ip = ip;
+        this.movies = movies;
     }
 
     public void run() {
@@ -26,6 +29,11 @@ public class ServerSenderTCP implements Runnable{
         }
 
         Ott.isON = true;
+
+        for(int i=1; i<=Ott.streams; i++) {
+            Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at));
+            serverStream.start();
+        }
 
         while(true) {
             try {
