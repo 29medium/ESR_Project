@@ -17,15 +17,15 @@ public class AddressingTable {
     private int hops;
     private int numStreams;
     private ReentrantLock lock;
-    private Condition con;
-    private boolean isOFF;
+    //private Condition con;
+    //private boolean isOFF;
 
     public AddressingTable(int numStreams, String ip) {
         this.table = new HashMap<>();
         this.hops = Integer.MAX_VALUE;
         this.lock = new ReentrantLock();
-        this.con = lock.newCondition();
-        this.isOFF = true;
+        //this.con = lock.newCondition();
+        //this.isOFF = true;
         this.ip = ip;
         this.isClientStream = new HashMap<>();
         this.numStreams = numStreams;
@@ -70,8 +70,8 @@ public class AddressingTable {
 
             table.put(ip, map);
 
-            this.isOFF = false;
-            con.signalAll();
+            //this.isOFF = false;
+            //con.signalAll();
         } finally {
             lock.unlock();
         }
@@ -152,11 +152,12 @@ public class AddressingTable {
     public void setStatus(String ip, boolean status, int streamID) {
         lock.lock();
         try {
-            while(isOFF)
-                con.await();
+            //while(isOFF)
+            //    con.await();
+
             table.get(ip).put(streamID, status);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        //} catch (InterruptedException e) {
+          //  e.printStackTrace();
         } finally {
             lock.unlock();
         }
@@ -189,7 +190,7 @@ public class AddressingTable {
     public void reset() {
         lock.lock();
         try {
-            this.isOFF = true;
+            //this.isOFF = true;
             this.hops = Integer.MAX_VALUE;
             this.sender = null;
         } finally {
@@ -200,7 +201,7 @@ public class AddressingTable {
     public void fullReset() {
         lock.lock();
         try {
-            this.isOFF = true;
+            //this.isOFF = true;
             this.hops = Integer.MAX_VALUE;
             this.sender = null;
             this.table = new HashMap<>();
@@ -252,7 +253,7 @@ public class AddressingTable {
             lock.lock();
         }
     }
-
+/*
     public void isOff() throws InterruptedException {
         lock.lock();
         try {
@@ -262,4 +263,5 @@ public class AddressingTable {
             lock.unlock();
         }
     }
+    */
 }
