@@ -141,7 +141,7 @@ public class OttReceiverTCP implements Runnable {
                 out.close();
                 s.close();
             } catch (IOException e) {
-                System.out.println("Falha na conexão\n");
+                //System.out.println("Falha na conexão\n");
             }
         }
     }

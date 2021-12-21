@@ -49,7 +49,7 @@ public class ServerReceiverTCP implements Runnable{
                 in.close();
                 s.close();
             } catch (IOException ignored) {
-                System.out.println("Falha na conexão\n");
+                //System.out.println("Falha na conexão\n");
             }
         }
     }

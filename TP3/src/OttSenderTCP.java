@@ -44,7 +44,7 @@ public class OttSenderTCP implements Runnable {
                 out.close();
                 s.close();
             } catch (IOException | InterruptedException e) {
-                System.out.println("Falha na conexão\n");
+                //System.out.println("Falha na conexão\n");
             }
         }
     }

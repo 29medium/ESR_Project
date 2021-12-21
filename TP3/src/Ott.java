@@ -151,13 +151,12 @@ public class Ott {
         out.close();
         s.close();
 
-
         String data = new String(rp.getData(), StandardCharsets.UTF_8);
         String[] args = data.split(" ");
         Set<String> neighbours = new TreeSet<>(List.of(args[1].split(",")));
         AddressingTable at = new AddressingTable(Integer.parseInt(args[0]), ip);
         at.addNeighbours(neighbours);
-        System.out.println("Recebeu vizinhos: " + args[0] + "\n");
+        //System.out.println("Recebeu vizinhos: " + args[0] + "\n");
 
         if(rp.getType() == 3) {
             for(String n : neighbours) {
