@@ -97,7 +97,7 @@ public class ServerStream extends JFrame implements ActionListener {
         }
         else
         {
-            sTimer.stop();
+            imagenb = 0;
         }
     }
 }

@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class OttReceiverTCP implements Runnable {
@@ -39,8 +40,16 @@ public class OttReceiverTCP implements Runnable {
 
                         System.out.println("Aceitou novo caminho com " + hops + " hops do nodo " + p.getSource()+ "\n");
 
+                        Map<Integer, Boolean> isClientStream = at.getIsClientStream();
+
                         if (sender != null) {
+                            for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
+                                if(e.getValue())
+                                    queue.add(new Packet(p.getDestination(), p.getSource(), 12, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
+                            }
+
                             queue.add(new Packet(ip, sender, 8, null));
+
                             System.out.println("Informou antigo caminho que encontrou nova alternativa\n");
                         }
 
@@ -48,6 +57,11 @@ public class OttReceiverTCP implements Runnable {
                         at.setHops(hops);
 
                         Packet.send(out, new Packet(p.getDestination(), p.getSource(), 6, null));
+
+                        for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
+                            if(e.getValue())
+                                queue.add(new Packet(p.getDestination(), p.getSource(), 11, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
+                        }
 
                         Set<String> neighbours = at.getNeighbours();
                         hops++;

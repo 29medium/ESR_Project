@@ -30,6 +30,15 @@ public class AddressingTable {
         }
     }
 
+    public Map<Integer, Boolean> getIsClientStream() {
+        lock.lock();
+        try {
+            return new HashMap<>(isClientStream);
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public Set<String> getNeighbours() {
         lock.lock();
         try {
