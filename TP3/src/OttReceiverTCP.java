@@ -87,9 +87,9 @@ public class OttReceiverTCP implements Runnable {
                     Set<String> routes = at.getRoutes();
                     Set<String> neighbours = at.getNeighbours();
                     neighbours.remove(p.getSource());
-                    neighbours.removeAll(routes);
 
                     for(String n : routes) {
+                        neighbours.remove(n);
                         queue.add(new Packet(ip, n, 10, null));
                     }
 
@@ -98,8 +98,6 @@ public class OttReceiverTCP implements Runnable {
                     if(neighbours.isEmpty()) {
                         String senderSender = at.getSenderSender();
                         queue.add(new Packet(ip, at.getSenderSender(), 4, null));
-
-                        System.out.println(senderSender);
 
                         queue.add(new Packet(ip, senderSender, 14, null));
                     } else {
