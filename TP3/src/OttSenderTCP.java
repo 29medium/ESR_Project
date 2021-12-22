@@ -10,15 +10,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class OttSenderTCP implements Runnable {
-    private String ip;
-    private String bootstrapperIP;
-    private AddressingTable at;
     private PacketQueue queue;
 
-    public OttSenderTCP(String ip, String bootstrapperIP, AddressingTable at, PacketQueue queue) {
-        this.ip = ip;
-        this.bootstrapperIP = bootstrapperIP;
-        this.at = at;
+    public OttSenderTCP(PacketQueue queue) {
         this.queue = queue;
     }
 

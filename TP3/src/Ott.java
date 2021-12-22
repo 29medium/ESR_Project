@@ -13,7 +13,7 @@ public class Ott {
         ServerSocket ss = new ServerSocket(8080);
 
         if(args.length==1 && args[0].equals("-server")) {
-            server(ip, ss, new Bootstrapper("../files/bootstrapper2"));
+            server(ip, ss, new Bootstrapper("../files/bootstrapper2"), new PacketQueue());
         } else if(args.length==2 && args[1].equals("-client")) {
             client(ip, ss, args[0], new PacketQueue(), new RTPqueue());
         } else if(args.length==1) {
@@ -23,7 +23,7 @@ public class Ott {
         }
     }
 
-    public static void server(String ip, ServerSocket ss, Bootstrapper bs) throws IOException {
+    public static void server(String ip, ServerSocket ss, Bootstrapper bs, PacketQueue queueTCP) throws IOException {
         File file = new File("../files/movies");
         Scanner s = new Scanner(file);
         Map<Integer, String> movies = new HashMap<>();
@@ -37,11 +37,15 @@ public class Ott {
         AddressingTable at = new AddressingTable(Ott.streams, ip);
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
 
-        Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip, movies));
+        Thread senderTCP = new Thread(new ServerSenderTCP(queueTCP));
         Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at));
+        Thread serverFload = new Thread(new ServerFload(bs, at, ip, movies, queueTCP));
+        Thread beacon = new Thread(new OttBeaconSender(at, queueTCP, ip));
 
         senderTCP.start();
         receiverTCP.start();
+        serverFload.start();
+        beacon.start();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;
@@ -52,9 +56,7 @@ public class Ott {
                 at.ping();
                 Set<String> routes = at.getRoutes();
                 for(String r : routes) {
-                    Socket ns = new Socket(r, 8080);
-                    DataOutputStream out = new DataOutputStream(ns.getOutputStream());
-                    Packet.send(out, new Packet(ip, r, 15, null));
+                    queueTCP.add( new Packet(ip, r, 15, null));
                 }
             }
             //System.out.print("Introduzir comando\n>> ");
@@ -65,12 +67,14 @@ public class Ott {
         AddressingTable at = neighbours(queueTCP, ip, bootstrapperIP);
 
         Thread ottStream = new Thread(new OttStream(at));
-        Thread senderTCP = new Thread(new OttSenderTCP(ip, bootstrapperIP, at, queueTCP));
+        Thread senderTCP = new Thread(new OttSenderTCP(queueTCP));
         Thread receiverTCP = new Thread(new OttReceiverTCP(ss, at, queueTCP, ip));
+        Thread beacon = new Thread(new OttBeaconSender(at, queueTCP, ip));
 
         senderTCP.start();
         receiverTCP.start();
         ottStream.start();
+        beacon.start();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;
@@ -98,13 +102,15 @@ public class Ott {
     public static void client(String ip, ServerSocket ss, String bootstrapperIP, PacketQueue queueTCP, RTPqueue queueRTP) throws IOException {
         AddressingTable at = neighbours(queueTCP, ip, bootstrapperIP);
 
-        Thread senderTCP = new Thread(new OttSenderTCP(ip, bootstrapperIP, at, queueTCP));
+        Thread senderTCP = new Thread(new OttSenderTCP(queueTCP));
         Thread receiverTCP = new Thread(new OttReceiverTCP(ss, at, queueTCP, ip));
         Thread clientStream = new Thread(new ClientStream(at, queueRTP));
+        Thread beacon = new Thread(new OttBeaconSender(at, queueTCP, ip));
 
         senderTCP.start();
         receiverTCP.start();
         clientStream.start();
+        beacon.start();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;
