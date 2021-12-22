@@ -29,12 +29,14 @@ public class ServerReceiverTCP implements Runnable{
 
                 if(p.getType() == 1) {
                     String data = Ott.streams + " " + bs.get(p.getSource());
-                    if(!Ott.isON) {
+                    if (!Ott.isON) {
                         Packet.send(out, new Packet(p.getDestination(), p.getSource(), 2, data.getBytes(StandardCharsets.UTF_8)));
                     } else {
                         Packet.send(out, new Packet(p.getDestination(), p.getSource(), 3, data.getBytes(StandardCharsets.UTF_8)));
                         Ott.changed = true;
                     }
+                } else if (p.getType() == 6) {
+                        at.addAddress(p.getSource());
                 } else if(p.getType() == 11) {
                     int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
                     at.setStatus(p.getSource(), true, streamID);
