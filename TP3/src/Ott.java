@@ -87,7 +87,7 @@ public class Ott {
                 Set<String> neighbours = at.getRoutes();
                 for(String n : neighbours) {
                     System.out.println("Avisar vizinhos que vou sair");
-                    queueTCP.add(new Packet(ip, n, 9, at.getSender().getBytes(StandardCharsets.UTF_8)));
+                    queueTCP.add(new Packet(ip, n, 9, null));
                 }
                 System.out.println("Avisar sender que vou sair");
                 queueTCP.add(new Packet(ip, at.getSender(), 8, null));
@@ -137,7 +137,7 @@ public class Ott {
                 Set<String> neighbours = at.getRoutes();
                 for(String n : neighbours) {
                     System.out.println("Avisar vizinhos que vou sair");
-                    queueTCP.add(new Packet(ip, n, 9, at.getSender().getBytes(StandardCharsets.UTF_8)));
+                    queueTCP.add(new Packet(ip, n, 9, null));
                 }
                 System.out.println("Avisar sender que vou sair");
                 queueTCP.add(new Packet(ip, at.getSender(), 8, null));

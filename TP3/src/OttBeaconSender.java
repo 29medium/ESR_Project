@@ -1,5 +1,6 @@
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class OttBeaconSender implements Runnable {
 
                     try {
                         Packet.send(out, new Packet(ip, r, 18, null));
-                    } catch (IOException e) {
+                    } catch (ConnectException e) {
                         System.out.println("1");
                         Set<String> neighbours = at.getNeighbours();
                         System.out.println("2");
@@ -45,14 +46,18 @@ public class OttBeaconSender implements Runnable {
                             System.out.println("Mandei limpar rotas");
                             queue.add(new Packet(ip, n, 10, null));
                         }
-
-                        at.reset();
-                        System.out.println("limpei as minhas rotas");
-
-                        for (String n : neighbours) {
-                            System.out.println("Pedi fload");
-                            queue.add(new Packet(ip, n, 4, null));
+                        
+                        if(neighbours.isEmpty()) {
+                            System.out.println("Pedi fload ao sender");
+                            queue.add(new Packet(ip, at.getSenderSender(), 4, null));
+                        } else {
+                            for (String n : neighbours) {
+                                System.out.println("Pedi fload");
+                                queue.add(new Packet(ip, n, 4, null));
+                            }
                         }
+
+                        queue.add(new Packet(ip, at.getSender(), 14, null));
                     }
 
                     out.close();

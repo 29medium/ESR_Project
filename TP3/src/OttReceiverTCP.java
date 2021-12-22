@@ -35,12 +35,15 @@ public class OttReceiverTCP implements Runnable {
                     queue.add(new Packet(ip, p.getSource(), 5, String.valueOf(hops).getBytes(StandardCharsets.UTF_8)));
                 }
                 else if(p.getType() == 5) {
-                    int hops = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
+                    String[] lines = new String(p.getData(), StandardCharsets.UTF_8).split(" ");
+                    int hops = Integer.parseInt(lines[0]);
                     System.out.println("Recebi caminho do ip " + p.getSource() + " com " + hops + " hops");
+                    String senderSender = lines[1];
 
                     if (hops < at.getHops()) {
                         String sender = at.getSender();
                         at.setSender(p.getSource());
+                        at.setSenderSender(senderSender);
                         at.setHops(hops);
 
                         Map<Integer, Boolean> isClientStream = at.getIsClientStream();
@@ -73,7 +76,8 @@ public class OttReceiverTCP implements Runnable {
                         for (String n : neighbours)
                             if (!n.equals(p.getSource())) {
                                 System.out.println("Enviei hops ao ip " + n);
-                                queue.add(new Packet(ip, n, 5, String.valueOf(hops).getBytes(StandardCharsets.UTF_8)));
+                                String msg = hops + " " + at.getSender();
+                                queue.add(new Packet(ip, n, 5, msg.getBytes(StandardCharsets.UTF_8)));
                             }
 
                     }
@@ -108,7 +112,7 @@ public class OttReceiverTCP implements Runnable {
 
                     if(neighbours.isEmpty()) {
                         System.out.println("Pedi fload ao sender");
-                        queue.add(new Packet(ip, new String(p.getData(), StandardCharsets.UTF_8), 4, null));
+                        queue.add(new Packet(ip, at.getSenderSender(), 4, null));
                     } else {
                         for (String n : neighbours) {
                             System.out.println("Pedi fload");

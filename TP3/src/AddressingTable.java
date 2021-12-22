@@ -14,17 +14,21 @@ public class AddressingTable {
     private Set<String> neighbours;
     private final String ip;
     private String sender;
+    private String senderSender;
     private int hops;
     private final int numStreams;
     private final ReentrantLock lock;
 
     public AddressingTable(int numStreams, String ip) {
         this.table = new HashMap<>();
-        this.hops = Integer.MAX_VALUE;
-        this.lock = new ReentrantLock();
-        this.ip = ip;
         this.isClientStream = new HashMap<>();
+        this.ip = ip;
+        this.sender = null;
+        this.senderSender = null;
+        this.hops = Integer.MAX_VALUE;
         this.numStreams = numStreams;
+        this.lock = new ReentrantLock();
+
         for(int i=1; i<=numStreams; i++)
             isClientStream.put(i, false);
     }
@@ -110,6 +114,25 @@ public class AddressingTable {
         lock.lock();
         try {
             this.sender = sender;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public String getSenderSender() {
+        lock.lock();
+        try {
+            return senderSender;
+        } finally {
+            lock.unlock();
+        }
+
+    }
+
+    public void setSenderSender(String senderSender) {
+        lock.lock();
+        try {
+            this.senderSender = senderSender;
         } finally {
             lock.unlock();
         }
@@ -207,6 +230,7 @@ public class AddressingTable {
             FileOutputStream out = new FileOutputStream(name);
 
             StringBuilder content = new StringBuilder("ip: " + ip + "\n");
+            content.append("sender: " + sender + "\n").append("senderSender: " + senderSender + "\n");
 
             for(Map.Entry<Integer, Boolean> f : isClientStream.entrySet()) {
                 content.append(" - Stream ").append(f.getKey()).append(" :").append(f.getValue()).append("\n");

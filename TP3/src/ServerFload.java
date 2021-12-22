@@ -60,7 +60,7 @@ public class ServerFload implements Runnable {
                     Thread.sleep(100);
 
                     for (String n : neighbours) {
-                        queue.add(new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8)));
+                        queue.add(new Packet(ip, n, 5, "1 null".getBytes(StandardCharsets.UTF_8)));
                         System.out.println("Enviei hops ao ip " + n);
                     }
 
