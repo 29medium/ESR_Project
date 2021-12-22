@@ -133,8 +133,6 @@ public class Packet {
                 default -> {}
             }
 
-            msg += "\n";
-
             System.out.println(msg);
         }
     }
@@ -165,8 +163,6 @@ public class Packet {
             default -> {
             }
         }
-
-        msg += "\n";
 
         System.out.println(msg);
     }
