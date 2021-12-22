@@ -155,7 +155,7 @@ public class OttReceiverTCP implements Runnable {
                     }
 
                     System.out.println("Limpar full as rotas");
-                    at.fullReset();
+                    at.reset();
                 } else if(p.getType() == 14) {
                     System.out.println("Mandar avisar o server que vai sair");
                     queue.add(new Packet(ip, at.getSender(), 14, null));
