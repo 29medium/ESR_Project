@@ -96,8 +96,9 @@ public class OttReceiverTCP implements Runnable {
                     at.reset();
 
                     if(neighbours.isEmpty()) {
+                        String senderSender = at.getSenderSender();
                         queue.add(new Packet(ip, at.getSenderSender(), 4, null));
-                        queue.add(new Packet(ip, at.getSenderSender(), 14, null));
+                        queue.add(new Packet(ip, senderSender, 14, null));
                     } else {
                         for (String n : neighbours) {
                             queue.add(new Packet(ip, n, 4, null));
