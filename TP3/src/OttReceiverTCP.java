@@ -35,36 +35,35 @@ public class OttReceiverTCP implements Runnable {
                     queue.add(new Packet(ip, p.getSource(), 5, String.valueOf(hops).getBytes(StandardCharsets.UTF_8)));
                 }
                 else if(p.getType() == 5) {
-                    System.out.println("Recebi caminho");
                     int hops = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
+                    System.out.println("Recebi caminho do ip " + p.getSource() + " com " + hops + " hops");
 
                     if (hops < at.getHops()) {
                         String sender = at.getSender();
+                        at.setSender(p.getSource());
+                        at.setHops(hops);
 
                         Map<Integer, Boolean> isClientStream = at.getIsClientStream();
 
                         if (sender != null) {
                             for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
                                 if (e.getValue()) {
-                                    queue.add(new Packet(p.getDestination(), p.getSource(), 12, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
-                                    System.out.println("Avisei sender antigo que não quero stream " + e.getKey());
+                                    queue.add(new Packet(p.getDestination(), sender, 12, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
+                                    System.out.println("Avisei " + sender + " que não quero stream " + e.getKey());
                                 }
                             }
-                            System.out.println("Avisei nodo antigo para me remover da tabela");
+                            System.out.println("Avisei" + sender + "para me remover da tabela");
                             queue.add(new Packet(ip, sender, 8, null));
                         }
 
-                        at.setSender(p.getSource());
-                        at.setHops(hops);
-
-                        System.out.println("Aceitei caminho");
+                        System.out.println("Aceitei caminho do ip " + p.getSource() + " com " + hops + " hops" );
                         queue.add(new Packet(p.getDestination(), p.getSource(), 6, null));
 
 
                         for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
                             if(e.getValue()) {
                                 queue.add(new Packet(p.getDestination(), p.getSource(), 11, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
-                                System.out.println("Avisei caminho que quero stream " + e.getKey());
+                                System.out.println("Avisei" + p.getSource() + "que quero stream " + e.getKey());
                             }
                         }
 
@@ -73,16 +72,16 @@ public class OttReceiverTCP implements Runnable {
 
                         for (String n : neighbours)
                             if (!n.equals(p.getSource())) {
-                                System.out.println("Enviei hops");
+                                System.out.println("Enviei hops ao ip " + n);
                                 queue.add(new Packet(ip, n, 5, String.valueOf(hops).getBytes(StandardCharsets.UTF_8)));
                             }
 
                     }
                 } else if (p.getType() == 6) {
-                    System.out.println("Adicionei caminho a tabela");
+                    System.out.println("Adicionei caminho a tabela para o ip " + p.getSource());
                     at.addAddress(p.getSource());
                 } else if(p.getType() == 8) {
-                    System.out.println("Removi caminho a tabela");
+                    System.out.println("Removi caminho a tabela para o ip " + p.getSource());
                     at.removeAddress(p.getSource());
                 } else if(p.getType() == 9) {
                     System.out.println("0");
@@ -151,7 +150,7 @@ public class OttReceiverTCP implements Runnable {
                     Set<String> routes = at.getRoutes();
 
                     for(String n : routes) {
-                        System.out.println("Mandar limpar full as rotas");
+                        System.out.println("Mandar limpar full as rotas ao ip " + ip);
                         queue.add(new Packet(ip, n, 13, null));
                     }
 

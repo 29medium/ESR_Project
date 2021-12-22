@@ -31,15 +31,15 @@ public class ServerFload implements Runnable {
 
         Ott.isON = true;
 
-        for(int i=1; i<=Ott.streams; i++) {
-            Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at));
-            serverStream.start();
-        }
-
         Set<String> neighbours = at.getNeighbours();
         for (String n : neighbours) {
             System.out.println("Enviei fload");
             queue.add(new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8)));
+        }
+
+        for(int i=1; i<=Ott.streams; i++) {
+            Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at));
+            serverStream.start();
         }
 
 
@@ -48,15 +48,25 @@ public class ServerFload implements Runnable {
                 Thread.sleep(20000);
 
                 if(Ott.changed) {
-                    System.out.println("Cheguei aqui 2");
+                    Ott.floading = true;
                     Ott.changed = false;
 
                     neighbours = at.getNeighbours();
-                    for (String n : neighbours)
-                        queue.add( new Packet(ip, n, 13, null));
+                    for (String n : neighbours) {
+                        queue.add(new Packet(ip, n, 13, null));
+                        System.out.println("Mandei limpar rotas ao ip " + n);
+                    }
 
-                    for (String n : neighbours)
+                    Thread.sleep(100);
+
+                    for (String n : neighbours) {
                         queue.add(new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8)));
+                        System.out.println("Enviei hops ao ip " + n);
+                    }
+
+                    Thread.sleep(100);
+
+                    Ott.floading = false;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
