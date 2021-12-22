@@ -83,6 +83,8 @@ public class Ott {
                     queueTCP.add(new Packet(ip, n, 9, at.getSender().getBytes(StandardCharsets.UTF_8)));
                 }
                 queueTCP.add(new Packet(ip, at.getSender(), 8, null));
+
+                System.exit(0);
             } else {
                 //System.out.println("Introduzir comando\nInvalid command");
             }
