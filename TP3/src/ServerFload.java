@@ -34,7 +34,7 @@ public class ServerFload implements Runnable {
         Set<String> neighbours = at.getNeighbours();
         for (String n : neighbours) {
             System.out.println("Enviei fload");
-            queue.add(new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8)));
+            queue.add(new Packet(ip, n, 5, "1 null".getBytes(StandardCharsets.UTF_8)));
         }
 
         for(int i=1; i<=Ott.streams; i++) {
