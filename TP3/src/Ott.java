@@ -9,6 +9,7 @@ public class Ott {
     public static int streams = 0;
 
     public static void main(String[] args) throws IOException {
+        System.out.println("Vamos tentar");
         String ip = InetAddress.getLocalHost().getHostAddress();
         ServerSocket ss = new ServerSocket(8080);
 
