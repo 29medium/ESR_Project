@@ -140,7 +140,7 @@ public class Packet {
     }
 
     public void printSent() {
-        String msg = "\n[SENT] ";
+        String msg = "[SENT] ";
         msg += "Type=" + type + " ";
         msg += "Destionation=" + destination + " ";
         msg += "MSG=";
