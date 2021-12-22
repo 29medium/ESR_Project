@@ -23,15 +23,12 @@ public class ServerSenderTCP implements Runnable{
 
     public void run() {
         try {
-            System.out.println("Entrei na thread");
             bs.full();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         Ott.isON = true;
-
-        System.out.println("Cheguei aqui");
 
         for(int i=1; i<=Ott.streams; i++) {
             Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at));
@@ -46,6 +43,7 @@ public class ServerSenderTCP implements Runnable{
                 DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
                 DataOutputStream out = new DataOutputStream(s.getOutputStream());
 
+                System.out.println("Enviei fload");
                 Packet p = new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8));
                 Packet.send(out, p);
 
@@ -88,7 +86,7 @@ public class ServerSenderTCP implements Runnable{
                         s.close();
                     }
                 }
-                
+
                  */
             } catch (InterruptedException /*| IOException*/ e) {
                 e.printStackTrace();

@@ -78,10 +78,13 @@ public class Ott {
         //System.out.print("Introduzir comando\n>> ");
         while((line = in.readLine())!= null) {
             if(line.equals("exit")) {
+                System.out.println("Exit");
                 Set<String> neighbours = at.getRoutes();
                 for(String n : neighbours) {
+                    System.out.println("Avisar vizinhos que vou sair");
                     queueTCP.add(new Packet(ip, n, 9, at.getSender().getBytes(StandardCharsets.UTF_8)));
                 }
+                System.out.println("Avisar sender que vou sair");
                 queueTCP.add(new Packet(ip, at.getSender(), 8, null));
 
                 System.exit(0);
