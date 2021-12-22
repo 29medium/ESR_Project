@@ -140,7 +140,6 @@ public class OttReceiverTCP implements Runnable {
 
                     at.reset();
                 } else if(p.getType() == 14) {
-                    Thread.sleep(2000);
                     queue.add(new Packet(ip, at.getSender(), 14, null));
                 } else if(p.getType() == 15) {
                     at.ping();
@@ -180,9 +179,7 @@ public class OttReceiverTCP implements Runnable {
                 s.close();
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            } 
         }
     }
 }

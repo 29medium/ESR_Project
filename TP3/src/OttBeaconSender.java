@@ -24,18 +24,20 @@ public class OttBeaconSender implements Runnable {
 
                 Set<String> routes = at.getRoutes();
                 for(String r : routes) {
-                    Socket s = new Socket(r, 8080);
-                    DataOutputStream out = new DataOutputStream(s.getOutputStream());
-
                     try {
+                        Socket s = new Socket(r, 8080);
+                        DataOutputStream out = new DataOutputStream(s.getOutputStream());
                         Packet.send(out, new Packet(ip, r, 18, null));
+                        out.close();
+                        s.close();
                     } catch (ConnectException e) {
                         Set<String> neighbours = at.getNeighbours();
                         neighbours.remove(r);
-                        neighbours.removeAll(routes);
 
-                        for(String n : routes)
+                        for(String n : routes) {
+                            neighbours.remove(n);
                             queue.add(new Packet(ip, n, 10, null));
+                        }
 
                         if(neighbours.isEmpty()) {
                             queue.add(new Packet(ip, at.getSenderSender(), 4, null));
@@ -47,11 +49,7 @@ public class OttBeaconSender implements Runnable {
 
                         queue.add(new Packet(ip, at.getSender(), 14, null));
                     }
-
-                    out.close();
-                    s.close();
                 }
-
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
