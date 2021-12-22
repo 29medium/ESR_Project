@@ -29,10 +29,12 @@ public class OttReceiverTCP implements Runnable {
                 Packet p = Packet.receive(in);
 
                 if(p.getType() == 4) {
+                    System.out.println("Pediu fload");
                     int hops = at.getHops() + 1;
                     queue.add(new Packet(ip, p.getSource(), 5, String.valueOf(hops).getBytes(StandardCharsets.UTF_8)));
                 }
                 else if(p.getType() == 5) {
+                    System.out.println("Recebi caminho");
                     int hops = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
 
                     if (hops < at.getHops()) {
@@ -41,18 +43,22 @@ public class OttReceiverTCP implements Runnable {
                         Map<Integer, Boolean> isClientStream = at.getIsClientStream();
 
                         if (sender != null) {
+                            System.out.println("Avisei sender antido que não quero stream");
                             for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
                                 if(e.getValue())
                                     queue.add(new Packet(p.getDestination(), p.getSource(), 12, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
                             }
 
+                            System.out.println("Avisei nodo antigo para me remover da tabela");
                             queue.add(new Packet(ip, sender, 8, null));
                         }
 
                         at.setSender(p.getSource());
                         at.setHops(hops);
 
+                        System.out.println("Aceitei caminho");
                         queue.add(new Packet(p.getDestination(), p.getSource(), 6, null));
+
 
                         for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
                             if(e.getValue())
@@ -136,8 +142,44 @@ public class OttReceiverTCP implements Runnable {
                     at.ping();
 
                     Set<String> routes = at.getRoutes();
-                    for(String r : routes) {
+                    for (String r : routes) {
                         queue.add(new Packet(ip, r, 15, null));
+                    }
+                } else if(p.getType() == 16) {
+                    System.out.println("Pediu fload");
+                    int hops = at.getHops() + 1;
+                    queue.add(new Packet(ip, p.getSource(), 17, String.valueOf(hops).getBytes(StandardCharsets.UTF_8)));
+                } else if(p.getType() == 17) {
+                    System.out.println("Recebi caminho");
+                    int hops = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
+
+                    if (hops < at.getHops()) {
+                        String sender = at.getSender();
+
+                        Map<Integer, Boolean> isClientStream = at.getIsClientStream();
+
+                        if (sender != null) {
+                            System.out.println("Avisei sender antido que não quero stream");
+                            for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
+                                if(e.getValue())
+                                    queue.add(new Packet(p.getDestination(), p.getSource(), 12, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
+                            }
+
+                            System.out.println("Avisei nodo antigo para me remover da tabela");
+                            queue.add(new Packet(ip, sender, 8, null));
+                        }
+
+                        at.setSender(p.getSource());
+                        at.setHops(hops);
+
+                        System.out.println("Aceitei caminho");
+                        queue.add(new Packet(p.getDestination(), p.getSource(), 6, null));
+
+
+                        for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
+                            if(e.getValue())
+                                queue.add(new Packet(p.getDestination(), p.getSource(), 11, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
+                        }
                     }
                 }
 
