@@ -48,6 +48,9 @@ public class ServerReceiverHandler implements Runnable {
                     } else if(p.getType() == 14) {
                         System.out.println("Houve mudanças no servidor");
                         Ott.changed = true;
+                    } else if (p.getType() == 18) {
+                        Socket s = new Socket(p.getSource(), 8080);
+                        at.setDataOutputStream(p.getSource(), new DataOutputStream(s.getOutputStream()));
                     }
                 }
             } catch (IOException e) {

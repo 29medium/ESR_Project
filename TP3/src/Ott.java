@@ -174,7 +174,7 @@ public class Ott {
 
         Packet.send(out, p);
         Packet rp = Packet.receive(in);
-        
+
         String data = new String(rp.getData(), StandardCharsets.UTF_8);
         String[] args = data.split(" ");
         Set<String> neighbours = new TreeSet<>(List.of(args[1].split(",")));
