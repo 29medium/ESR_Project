@@ -26,16 +26,7 @@ public class OttSenderTCP implements Runnable {
         while(true) {
             try {
                 Packet p = queue.remove();
-
-                Socket s = new Socket(p.getDestination(), 8080);
-                DataOutputStream out = new DataOutputStream(s.getOutputStream());
-                DataInputStream in = new DataInputStream(new DataInputStream(s.getInputStream()));
-
-                Packet.send(out, p);
-
-                in.close();
-                out.close();
-                s.close();
+                Packet.send(at.getDataOutputStream(p.getDestination()), p);
             } catch (ConnectException ignored) {
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();

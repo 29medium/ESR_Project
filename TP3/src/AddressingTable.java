@@ -1,7 +1,5 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.locks.Condition;
@@ -11,7 +9,7 @@ import java.util.stream.Collectors;
 public class AddressingTable {
     private Map<String, Map<Integer, Boolean>> table;
     private final Map<Integer, Boolean> isClientStream;
-    private Set<String> neighbours;
+    private Map<String, DataOutputStream> neighbours;
     private final String ip;
     private String sender;
     private int hops;
@@ -29,10 +27,10 @@ public class AddressingTable {
             isClientStream.put(i, false);
     }
 
-    public void addNeighbours(Set<String> neighbours) {
+    public void addNeighbours(Map<String, DataOutputStream> neighbours) {
         lock.lock();
         try {
-            this.neighbours = new TreeSet<>(neighbours);
+            this.neighbours = new HashMap<>(neighbours);
         } finally {
             lock.unlock();
         }
@@ -50,7 +48,25 @@ public class AddressingTable {
     public Set<String> getNeighbours() {
         lock.lock();
         try {
-            return new TreeSet<>(neighbours);
+            return new TreeSet<>(neighbours.keySet());
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public DataOutputStream getDataOutputStream(String ip) {
+        lock.lock();
+        try {
+            return this.neighbours.get(ip);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void setDataOutputStream(String ip, DataOutputStream out) {
+        lock.lock();
+        try {
+            this.neighbours.put(ip, out);
         } finally {
             lock.unlock();
         }

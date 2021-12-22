@@ -36,7 +36,21 @@ public class Ott {
         }
 
         AddressingTable at = new AddressingTable(Ott.streams, ip);
-        at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
+        Set<String> neighbours = new TreeSet<>(List.of(bs.get(ip).split(",")));
+        Map<String, DataOutputStream> neighboursMap = new HashMap<>();
+        Socket ns;
+
+        for(String n : neighbours) {
+            try {
+                ns = new Socket(n, 8080);
+                neighboursMap.put(n, new DataOutputStream(ns.getOutputStream()));
+
+                Packet.send(new DataOutputStream(ns.getOutputStream()), new Packet(ip, n, 18, null));
+            } catch (ConnectException e) {
+                neighboursMap.put(n, null);
+            }
+        }
+        at.addNeighbours(neighboursMap);
 
         Thread senderTCP = new Thread(new ServerSenderTCP(bs, at, ip, movies));
         Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at));
@@ -46,6 +60,7 @@ public class Ott {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;
+        DataOutputStream out;
 
         //System.out.print("Introduzir comando\n>> ");
         while((line = in.readLine())!= null) {
@@ -53,8 +68,7 @@ public class Ott {
                 at.ping();
                 Set<String> routes = at.getRoutes();
                 for(String r : routes) {
-                    Socket ns = new Socket(r, 8080);
-                    DataOutputStream out = new DataOutputStream(ns.getOutputStream());
+                    out = neighboursMap.get(r);
                     Packet.send(out, new Packet(ip, r, 15, null));
                 }
             }
@@ -162,15 +176,24 @@ public class Ott {
         Packet.send(out, p);
         Packet rp = Packet.receive(in);
 
-        in.close();
-        out.close();
-        s.close();
-
         String data = new String(rp.getData(), StandardCharsets.UTF_8);
         String[] args = data.split(" ");
         Set<String> neighbours = new TreeSet<>(List.of(args[1].split(",")));
         AddressingTable at = new AddressingTable(Integer.parseInt(args[0]), ip);
-        at.addNeighbours(neighbours);
+
+        HashMap<String, DataOutputStream> neighboursMap = new HashMap<>();
+        for(String n : neighbours) {
+            try {
+                s = new Socket(n, 8080);
+                neighboursMap.put(n, new DataOutputStream(s.getOutputStream()));
+
+                queue.add(new Packet(ip, n, 18, null));
+            } catch (ConnectException e) {
+                neighboursMap.put(n, null);
+            }
+        }
+
+        at.addNeighbours(neighboursMap);
 
         if(rp.getType() == 3) {
             System.out.println("Entrei e o server já estava ligado");

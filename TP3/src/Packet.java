@@ -73,12 +73,15 @@ public class Packet {
     }
 
     public static Packet receive(DataInputStream in) throws IOException {
-        byte[] arr = new byte[4096];
-        int size = in.read(arr, 0, 4096);
-        byte[] content = new byte[size];
-        System.arraycopy(arr, 0, content, 0, size);
-
-        return new Packet(content);
+        try {
+            byte[] arr = new byte[4096];
+            int size = in.read(arr, 0, 4096);
+            byte[] content = new byte[size];
+            System.arraycopy(arr, 0, content, 0, size);
+            return new Packet(content);
+        } catch (NegativeArraySizeException nase) {
+            return null;
+        }
     }
 
     public static void send(DataOutputStream out, Packet p) throws IOException {
