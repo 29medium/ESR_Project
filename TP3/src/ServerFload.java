@@ -32,10 +32,8 @@ public class ServerFload implements Runnable {
         Ott.isON = true;
 
         Set<String> neighbours = at.getNeighbours();
-        for (String n : neighbours) {
-            System.out.println("Enviei fload");
+        for (String n : neighbours)
             queue.add(new Packet(ip, n, 5, "1 null".getBytes(StandardCharsets.UTF_8)));
-        }
 
         for(int i=1; i<=Ott.streams; i++) {
             Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at));
@@ -54,15 +52,12 @@ public class ServerFload implements Runnable {
                     neighbours = at.getNeighbours();
                     for (String n : neighbours) {
                         queue.add(new Packet(ip, n, 13, null));
-                        System.out.println("Mandei limpar rotas ao ip " + n);
                     }
 
                     Thread.sleep(100);
 
-                    for (String n : neighbours) {
+                    for (String n : neighbours)
                         queue.add(new Packet(ip, n, 5, "1 null".getBytes(StandardCharsets.UTF_8)));
-                        System.out.println("Enviei hops ao ip " + n);
-                    }
 
                     Thread.sleep(100);
 

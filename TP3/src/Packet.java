@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class Packet {
     private String source;
@@ -78,10 +79,14 @@ public class Packet {
         byte[] content = new byte[size];
         System.arraycopy(arr, 0, content, 0, size);
 
-        return new Packet(content);
+        Packet p = new Packet(content);
+        p.printReceive();
+
+        return p;
     }
 
     public static void send(DataOutputStream out, Packet p) throws IOException {
+        p.printSent();
         out.write(p.toBytes());
         out.flush();
     }
@@ -90,31 +95,142 @@ public class Packet {
         return type;
     }
 
-    public void setType(int type) {
-        this.type = type;
-    }
-
     public String getSource() {
         return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
     }
 
     public String getDestination() {
         return destination;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
-
     public byte[] getData() {
         return data;
     }
 
-    public void setData(byte[] data) {
-        this.data = data;
+    public void printReceive() {
+        String msg = "\n[RCVD] ";
+        msg += "Type=" + type + " ";
+        msg += "Source=" + source + " ";
+        msg += "MSG=";
+
+        switch (type){
+            case 1:
+                msg += "Recebi pedido de vizinhos";
+                break;
+            case 2:
+                msg += "Recebi vizinhos e server está off";
+                break;
+            case 3:
+                msg += "Recebi vizinhos e server está on";
+                break;
+            case 4:
+                msg += "Recebi pedido de fload";
+                break;
+            case 5:
+                msg += "Recebi foad com "  + new String(data, StandardCharsets.UTF_8).split(" ")[0] + "hops";
+                break;
+            case 6:
+                msg += "Recebi confirmação de caminho aceite";
+                break;
+            case 8:
+                msg += "Recebi informação de caminho substituido";
+                break;
+            case 9:
+                msg += "Recebi informação que o sender vai sair";
+                break;
+            case 10:
+            case 13:
+                msg += "Recebi informação para limpar as minhas rotas";
+                break;
+            case 11:
+                msg += "Recebi pedido de stream " + new String(data, StandardCharsets.UTF_8);
+                break;
+            case 12:
+                msg += "Recebi pedido de cancelamento de stream " + new String(data, StandardCharsets.UTF_8);
+                break;
+            case 14:
+                msg += "Recebi pedido de informação ao servidor que o nodo vai sair";
+                break;
+            case 15:
+                msg += "Recebi pedido de escrita para ficheiro de log";
+                break;
+            case 16:
+                msg += "Recebi pedido de fload sem redirecionamento";
+                break;
+            case 17:
+                msg += "Recebi fload sem redirecionamento com " + new String(data, StandardCharsets.UTF_8).split(" ")[0] + "hops";
+                break;
+            default:
+                break;
+        }
+
+        msg += "\n";
+
+        System.out.println(msg);
+    }
+
+    public void printSent() {
+        String msg = "\n[SENT] ";
+        msg += "Type=" + type + " ";
+        msg += "Destionation=" + destination + " ";
+        msg += "MSG=";
+
+        switch (type){
+            case 1:
+                msg += "Enviei pedido de vizinhos";
+                break;
+            case 2:
+                msg += "Enviei vizinhos e server está off";
+                break;
+            case 3:
+                msg += "Enviei vizinhos e server está on";
+                break;
+            case 4:
+                msg += "Enviei pedido de fload";
+                break;
+            case 5:
+                msg += "Enviei foad com "  + new String(data, StandardCharsets.UTF_8).split(" ")[0] + "hops";
+                break;
+            case 6:
+                msg += "Enviei confirmação de caminho aceite";
+                break;
+            case 8:
+                msg += "Enviei informação de caminho substituido";
+                break;
+            case 9:
+                msg += "Enviei informação que o sender vai sair";
+                break;
+            case 10:
+            case 13:
+                msg += "Enviei informação para limpar as minhas rotas";
+                break;
+            case 11:
+                msg += "Enviei pedido de stream " + new String(data, StandardCharsets.UTF_8);
+                break;
+            case 12:
+                msg += "Enviei pedido de cancelamento de stream " + new String(data, StandardCharsets.UTF_8);
+                break;
+            case 14:
+                msg += "Enviei pedido de informação ao servidor que o nodo vai sair";
+                break;
+            case 15:
+                msg += "Enviei pedido de escrita para ficheiro de log";
+                break;
+            case 16:
+                msg += "Enviei pedido de fload sem redirecionamento";
+                break;
+            case 17:
+                msg += "Enviei fload sem redirecionamento com " + new String(data, StandardCharsets.UTF_8).split(" ")[0] + "hops";
+                break;
+            case 18:
+                msg += "Enviei beacon";
+                break;
+            default:
+                break;
+        }
+
+        msg += "\n";
+
+        System.out.println(msg);
     }
 }

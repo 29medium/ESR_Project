@@ -51,7 +51,6 @@ public class Ott {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;
 
-        //System.out.print("Introduzir comando\n>> ");
         while((line = in.readLine())!= null) {
             if(line.equals("ping")) {
                 at.ping();
@@ -60,7 +59,6 @@ public class Ott {
                     queueTCP.add( new Packet(ip, r, 15, null));
                 }
             }
-            //System.out.print("Introduzir comando\n>> ");
         }
     }
 
@@ -80,23 +78,16 @@ public class Ott {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;
 
-        //System.out.print("Introduzir comando\n>> ");
         while((line = in.readLine())!= null) {
             if(line.equals("exit")) {
-                System.out.println("Exit");
                 Set<String> neighbours = at.getRoutes();
                 for(String n : neighbours) {
-                    System.out.println("Avisar vizinhos que vou sair");
                     queueTCP.add(new Packet(ip, n, 9, null));
                 }
-                System.out.println("Avisar sender que vou sair");
                 queueTCP.add(new Packet(ip, at.getSender(), 8, null));
 
                 System.exit(0);
-            } else {
-                //System.out.println("Introduzir comando\nInvalid command");
             }
-            //System.out.print("Introduzir comando\n>> ");
         }
     }
 
@@ -117,7 +108,6 @@ public class Ott {
         String line;
         int streamID;
 
-        //System.out.print("Introduzir stream (1-" + at.getNumStreams() +")\n>> ");
         while((line = in.readLine())!= null) {
             if(lerInt(1, at.getNumStreams(), line)) {
                 streamID = Integer.parseInt(line);
@@ -129,24 +119,16 @@ public class Ott {
 
                     Thread display = new Thread(new ClientDisplay(at, queueRTP, queueTCP, streamID, ip));
                     display.start();
-                } else {
-                    //System.out.println("Stream já está a ser transmitida");
                 }
             } else if(line.equals("exit")) {
-                System.out.println("Exit");
                 Set<String> neighbours = at.getRoutes();
                 for(String n : neighbours) {
-                    System.out.println("Avisar vizinhos que vou sair");
                     queueTCP.add(new Packet(ip, n, 9, null));
                 }
-                System.out.println("Avisar sender que vou sair");
                 queueTCP.add(new Packet(ip, at.getSender(), 8, null));
 
                 System.exit(0);
-            } else {
-                //System.out.println("Invalid command");
             }
-            //System.out.print("Introduzir stream (1-" + at.getNumStreams() +")\n>> ");
         }
     }
 
@@ -179,7 +161,6 @@ public class Ott {
         at.addNeighbours(neighbours);
 
         if(rp.getType() == 3) {
-            System.out.println("Entrei e o server já estava ligado");
             for(String n : neighbours) {
                 queue.add(new Packet(ip, n, 16, null));
             }
