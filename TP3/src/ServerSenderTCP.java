@@ -82,14 +82,6 @@ public class ServerSenderTCP implements Runnable{
                         Packet p = new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8));
                         Packet.send(out, p);
 
-                        if (p.getType() == 5) {
-                            Packet rp = Packet.receive(in);
-
-                            if (rp.getType() ==6) {
-                                at.addAddress(n);
-                            }
-                        }
-
                         in.close();
                         out.close();
                         s.close();
