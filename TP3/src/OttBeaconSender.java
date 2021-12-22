@@ -4,8 +4,6 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Set;
 
-import static java.lang.Thread.sleep;
-
 public class OttBeaconSender implements Runnable {
     private AddressingTable at;
     private PacketQueue queue;
@@ -22,6 +20,35 @@ public class OttBeaconSender implements Runnable {
             try {
                 Thread.sleep(5000);
 
+                try {
+                    Socket s = new Socket(at.getSender(), 8080);
+                    DataOutputStream out = new DataOutputStream(s.getOutputStream());
+                    Packet.send(out, new Packet(ip, at.getSender(), 18, null));
+                    out.close();
+                    s.close();
+                } catch (ConnectException e) {
+                    Set<String> routes = at.getRoutes();
+                    Set<String> neighbours = at.getNeighbours();
+                    neighbours.remove(at.getSender());
+
+                    for(String n : routes) {
+                        neighbours.remove(n);
+                        queue.add(new Packet(ip, n, 10, null));
+                    }
+
+                    at.reset();
+
+                    if(neighbours.isEmpty()) {
+                        String senderSender = at.getSenderSender();
+                        queue.add(new Packet(ip, senderSender, 4, null));
+                        queue.add(new Packet(ip, senderSender, 14, null));
+                    } else {
+                        for (String n : neighbours)
+                            queue.add(new Packet(ip, n, 4, null));
+                        queue.add(new Packet(ip, at.getSender(), 14, null));
+                    }
+                }
+
                 Set<String> routes = at.getRoutes();
                 for(String r : routes) {
                     try {
@@ -31,23 +58,7 @@ public class OttBeaconSender implements Runnable {
                         out.close();
                         s.close();
                     } catch (ConnectException e) {
-                        Set<String> neighbours = at.getNeighbours();
-                        neighbours.remove(r);
-
-                        for(String n : routes) {
-                            neighbours.remove(n);
-                            queue.add(new Packet(ip, n, 10, null));
-                        }
-
-                        if(neighbours.isEmpty()) {
-                            queue.add(new Packet(ip, at.getSenderSender(), 4, null));
-                        } else {
-                            for (String n : neighbours) {
-                                queue.add(new Packet(ip, n, 4, null));
-                            }
-                        }
-
-                        queue.add(new Packet(ip, at.getSender(), 14, null));
+                        at.removeAddress(r);
                     }
                 }
             } catch (InterruptedException | IOException e) {
@@ -56,3 +67,7 @@ public class OttBeaconSender implements Runnable {
         }
     }
 }
+
+/*
+
+ */
