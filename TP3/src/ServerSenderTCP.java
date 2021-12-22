@@ -23,12 +23,15 @@ public class ServerSenderTCP implements Runnable{
 
     public void run() {
         try {
+            System.out.println("Entrei na thread");
             bs.full();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         Ott.isON = true;
+
+        System.out.println("Cheguei aqui");
 
         for(int i=1; i<=Ott.streams; i++) {
             Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at));
@@ -38,6 +41,7 @@ public class ServerSenderTCP implements Runnable{
         while(true) {
             try {
                 if(Ott.changed) {
+                    System.out.println("Cheguei aqui 2");
                     Ott.changed = false;
 
                     Set<String> neighbours = at.getNeighbours();

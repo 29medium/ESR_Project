@@ -43,7 +43,7 @@ public class OttReceiverTCP implements Runnable {
                         Map<Integer, Boolean> isClientStream = at.getIsClientStream();
 
                         if (sender != null) {
-                            System.out.println("Avisei sender antido que não quero stream");
+                            System.out.println("Avisei sender antigo que não quero stream");
                             for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
                                 if(e.getValue())
                                     queue.add(new Packet(p.getDestination(), p.getSource(), 12, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
