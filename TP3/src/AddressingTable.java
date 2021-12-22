@@ -1,5 +1,7 @@
-import java.io.*;
-import java.net.Socket;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.locks.Condition;
@@ -9,17 +11,21 @@ import java.util.stream.Collectors;
 public class AddressingTable {
     private Map<String, Map<Integer, Boolean>> table;
     private final Map<Integer, Boolean> isClientStream;
-    private Map<String, DataOutputStream> neighbours;
+    private Set<String> neighbours;
     private final String ip;
     private String sender;
     private int hops;
     private final int numStreams;
     private final ReentrantLock lock;
+    private final Condition con;
+    private boolean isOFF;
 
     public AddressingTable(int numStreams, String ip) {
         this.table = new HashMap<>();
         this.hops = Integer.MAX_VALUE;
         this.lock = new ReentrantLock();
+        this.con = lock.newCondition();
+        this.isOFF = true;
         this.ip = ip;
         this.isClientStream = new HashMap<>();
         this.numStreams = numStreams;
@@ -27,10 +33,10 @@ public class AddressingTable {
             isClientStream.put(i, false);
     }
 
-    public void addNeighbours(Map<String, DataOutputStream> neighbours) {
+    public void addNeighbours(Set<String> neighbours) {
         lock.lock();
         try {
-            this.neighbours = new HashMap<>(neighbours);
+            this.neighbours = new TreeSet<>(neighbours);
         } finally {
             lock.unlock();
         }
@@ -48,25 +54,7 @@ public class AddressingTable {
     public Set<String> getNeighbours() {
         lock.lock();
         try {
-            return new TreeSet<>(neighbours.keySet());
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public DataOutputStream getDataOutputStream(String ip) {
-        lock.lock();
-        try {
-            return this.neighbours.get(ip);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void setDataOutputStream(String ip, DataOutputStream out) {
-        lock.lock();
-        try {
-            this.neighbours.put(ip, out);
+            return new TreeSet<>(neighbours);
         } finally {
             lock.unlock();
         }
@@ -81,6 +69,9 @@ public class AddressingTable {
                 map.put(i, false);
 
             table.put(ip, map);
+
+            this.isOFF = false;
+            con.signalAll();
         } finally {
             lock.unlock();
         }
@@ -152,6 +143,13 @@ public class AddressingTable {
     public boolean isNotStreaming(int streamID) {
         lock.lock();
         try {
+            try {
+                while (isOFF)
+                    con.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             return !table.values().stream().map(m -> m.get(streamID)).collect(Collectors.toSet()).contains(true) && !isClientStream.get(streamID);
         } finally {
             lock.unlock();
@@ -161,7 +159,12 @@ public class AddressingTable {
     public void setStatus(String ip, boolean status, int streamID) {
         lock.lock();
         try {
+            while(isOFF)
+                con.await();
+
             table.get(ip).put(streamID, status);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
@@ -170,6 +173,13 @@ public class AddressingTable {
     public Set<String> getStreamIPs(int streamID) {
         lock.lock();
         try {
+            try {
+                while (isOFF)
+                    con.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             Set<String> stream = new TreeSet<>();
 
             for(Map.Entry<String, Map<Integer, Boolean>> m : table.entrySet())
@@ -185,6 +195,13 @@ public class AddressingTable {
     public Set<String> getRoutes() {
         lock.lock();
         try {
+            try {
+                while(isOFF)
+                    con.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             return table.keySet();
         } finally {
             lock.unlock();
@@ -194,6 +211,7 @@ public class AddressingTable {
     public void reset() {
         lock.lock();
         try {
+            this.isOFF = true;
             this.hops = Integer.MAX_VALUE;
             this.sender = null;
         } finally {
@@ -204,6 +222,7 @@ public class AddressingTable {
     public void fullReset() {
         lock.lock();
         try {
+            this.isOFF = true;
             this.hops = Integer.MAX_VALUE;
             this.sender = null;
             this.table = new HashMap<>();

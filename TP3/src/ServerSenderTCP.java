@@ -38,8 +38,18 @@ public class ServerSenderTCP implements Runnable{
         try {
             Set<String> neighbours = at.getNeighbours();
             for (String n : neighbours) {
+                Socket s = new Socket(n, 8080);
+
+                DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
+                DataOutputStream out = new DataOutputStream(s.getOutputStream());
+
                 System.out.println("Enviei fload");
-                Packet.send(at.getDataOutputStream(n), new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8)));
+                Packet p = new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8));
+                Packet.send(out, p);
+
+                in.close();
+                out.close();
+                s.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -56,12 +66,24 @@ public class ServerSenderTCP implements Runnable{
 
                     Set<String> neighbours = at.getNeighbours();
                     for (String n : neighbours) {
+                        Socket s = new Socket(n, 8080);
+
                         DataOutputStream out = new DataOutputStream(s.getOutputStream());
-                        Packet.send(at.getDataOutputStream(n), new Packet(ip, n, 13, null));
+                        Packet.send(out, new Packet(ip, n, 13, null));
                     }
 
                     for (String n : neighbours) {
-                        Packet.send(at.getDataOutputStream(n), new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8)));
+                        Socket s = new Socket(n, 8080);
+
+                        DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
+                        DataOutputStream out = new DataOutputStream(s.getOutputStream());
+
+                        Packet p = new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8));
+                        Packet.send(out, p);
+
+                        in.close();
+                        out.close();
+                        s.close();
                     }
                 }
 
