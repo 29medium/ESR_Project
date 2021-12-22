@@ -85,6 +85,7 @@ public class OttReceiverTCP implements Runnable {
                     System.out.println("Removi caminho a tabela");
                     at.removeAddress(p.getSource());
                 } else if(p.getType() == 9) {
+                    System.out.println("0");
                     Set<String> routes = at.getRoutes();
                     System.out.println("1");
                     Set<String> neighbours = at.getNeighbours();
