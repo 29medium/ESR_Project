@@ -85,8 +85,6 @@ public class OttReceiverTCP implements Runnable {
                     System.out.println("Removi caminho a tabela");
                     at.removeAddress(p.getSource());
                 } else if(p.getType() == 9) {
-                    at.reset();
-
                     Set<String> routes = at.getRoutes();
                     Set<String> neighbours = at.getNeighbours();
                     System.out.println(neighbours);
@@ -99,6 +97,8 @@ public class OttReceiverTCP implements Runnable {
                         System.out.println("Mandei limpar rotas");
                         queue.add(new Packet(ip, n, 10, null));
                     }
+
+                    at.reset();
 
                     if(neighbours.isEmpty()) {
                         System.out.println("Pedi fload ao sender");
