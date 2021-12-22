@@ -97,13 +97,15 @@ public class OttReceiverTCP implements Runnable {
 
                     if(neighbours.isEmpty()) {
                         queue.add(new Packet(ip, at.getSenderSender(), 4, null));
+                        queue.add(new Packet(ip, at.getSenderSender(), 14, null));
                     } else {
                         for (String n : neighbours) {
                             queue.add(new Packet(ip, n, 4, null));
                         }
+                        queue.add(new Packet(ip, at.getSender(), 14, null));
                     }
 
-                    queue.add(new Packet(ip, at.getSender(), 14, null));
+
                 } else if(p.getType() == 10) {
                     Set<String> routes = at.getRoutes();
 
