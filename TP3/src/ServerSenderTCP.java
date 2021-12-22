@@ -38,8 +38,37 @@ public class ServerSenderTCP implements Runnable{
             serverStream.start();
         }
 
+        try {
+            Set<String> neighbours = at.getNeighbours();
+            for (String n : neighbours) {
+                Socket s = new Socket(n, 8080);
+
+                DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
+                DataOutputStream out = new DataOutputStream(s.getOutputStream());
+
+                Packet p = new Packet(ip, n, 5, "1".getBytes(StandardCharsets.UTF_8));
+                Packet.send(out, p);
+
+                if (p.getType() == 5) {
+                    Packet rp = Packet.receive(in);
+
+                    if (rp.getType() == 6) {
+                        at.addAddress(n);
+                    }
+                }
+
+                in.close();
+                out.close();
+                s.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         while(true) {
             try {
+                Thread.sleep(20000);
+                
                 if(Ott.changed) {
                     System.out.println("Cheguei aqui 2");
                     Ott.changed = false;
@@ -74,7 +103,6 @@ public class ServerSenderTCP implements Runnable{
                         s.close();
                     }
                 }
-                Thread.sleep(20000);
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
