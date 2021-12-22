@@ -11,7 +11,6 @@ public class ServerReceiverTCP implements Runnable{
     private Bootstrapper bs;
     private AddressingTable at;
 
-
     public ServerReceiverTCP(ServerSocket ss, Bootstrapper bs, AddressingTable at) {
         this.ss = ss;
         this.bs = bs;
@@ -22,39 +21,8 @@ public class ServerReceiverTCP implements Runnable{
         while(true) {
             try {
                 Socket s = ss.accept();
-                DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
-                DataOutputStream out = new DataOutputStream(s.getOutputStream());
-
-                Packet p = Packet.receive(in);
-
-                if(p.getType() == 1) {
-                    System.out.println("Pediu vizinhos");
-                    String data = Ott.streams + " " + bs.get(p.getSource());
-                    if (!Ott.isON) {
-                        Packet.send(out, new Packet(p.getDestination(), p.getSource(), 2, data.getBytes(StandardCharsets.UTF_8)));
-                    } else {
-                        Packet.send(out, new Packet(p.getDestination(), p.getSource(), 3, data.getBytes(StandardCharsets.UTF_8)));
-                        Ott.changed = true;
-                    }
-                } else if (p.getType() == 6) {
-                    System.out.println("Adicionei a tabela");
-                    at.addAddress(p.getSource());
-                } else if(p.getType() == 11) {
-                    int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
-                    System.out.println("Quer stream " + streamID);
-                    at.setStatus(p.getSource(), true, streamID);
-                } else if(p.getType() == 12) {
-                    int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
-                    System.out.println("Não quer stream " + streamID);
-                    at.setStatus(p.getSource(), false, streamID);
-                } else if(p.getType() == 14) {
-                    System.out.println("Houve mudanças no servidor");
-                    Ott.changed = true;
-                }
-
-                out.close();
-                in.close();
-                s.close();
+                Thread receiverHandler = new Thread(new ServerReceiverHandler(new DataInputStream(new BufferedInputStream(s.getInputStream())), new DataOutputStream(s.getOutputStream()), bs, at));
+                receiverHandler.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
