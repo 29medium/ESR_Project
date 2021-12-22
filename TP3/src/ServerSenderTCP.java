@@ -59,7 +59,6 @@ public class ServerSenderTCP implements Runnable{
             try {
                 Thread.sleep(20000);
 
-                /*
                 if(Ott.changed) {
                     System.out.println("Cheguei aqui 2");
                     Ott.changed = false;
@@ -86,9 +85,7 @@ public class ServerSenderTCP implements Runnable{
                         s.close();
                     }
                 }
-
-                 */
-            } catch (InterruptedException /*| IOException*/ e) {
+            } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
         }
