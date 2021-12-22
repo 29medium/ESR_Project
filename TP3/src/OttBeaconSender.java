@@ -46,7 +46,7 @@ public class OttBeaconSender implements Runnable {
                             System.out.println("Mandei limpar rotas");
                             queue.add(new Packet(ip, n, 10, null));
                         }
-                        
+
                         if(neighbours.isEmpty()) {
                             System.out.println("Pedi fload ao sender");
                             queue.add(new Packet(ip, at.getSenderSender(), 4, null));

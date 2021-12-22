@@ -35,7 +35,9 @@ public class OttReceiverTCP implements Runnable {
                     queue.add(new Packet(ip, p.getSource(), 5, String.valueOf(hops).getBytes(StandardCharsets.UTF_8)));
                 }
                 else if(p.getType() == 5) {
+                    System.out.println(new String(p.getData(), StandardCharsets.UTF_8));
                     String[] lines = new String(p.getData(), StandardCharsets.UTF_8).split(" ");
+                    System.out.println(lines);
                     int hops = Integer.parseInt(lines[0]);
                     System.out.println("Recebi caminho do ip " + p.getSource() + " com " + hops + " hops");
                     String senderSender = lines[1];
@@ -43,7 +45,12 @@ public class OttReceiverTCP implements Runnable {
                     if (hops < at.getHops()) {
                         String sender = at.getSender();
                         at.setSender(p.getSource());
-                        at.setSenderSender(senderSender);
+
+                        if(senderSender.equals("null"))
+                            at.setSenderSender(null);
+                        else
+                            at.setSenderSender(senderSender);
+
                         at.setHops(hops);
 
                         Map<Integer, Boolean> isClientStream = at.getIsClientStream();
