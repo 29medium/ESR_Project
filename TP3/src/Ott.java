@@ -164,7 +164,7 @@ public class Ott {
         if(rp.getType() == 3) {
             System.out.println("Entrei e o server já estava ligado");
             for(String n : neighbours) {
-                queue.add(new Packet(ip, n, 17, null));
+                queue.add(new Packet(ip, n, 16, null));
             }
         }
 

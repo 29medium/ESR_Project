@@ -156,15 +156,7 @@ public class OttReceiverTCP implements Runnable {
                     if (hops < at.getHops()) {
                         String sender = at.getSender();
 
-                        Map<Integer, Boolean> isClientStream = at.getIsClientStream();
-
                         if (sender != null) {
-                            System.out.println("Avisei sender antido que não quero stream");
-                            for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
-                                if(e.getValue())
-                                    queue.add(new Packet(p.getDestination(), p.getSource(), 12, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
-                            }
-
                             System.out.println("Avisei nodo antigo para me remover da tabela");
                             queue.add(new Packet(ip, sender, 8, null));
                         }
@@ -174,12 +166,6 @@ public class OttReceiverTCP implements Runnable {
 
                         System.out.println("Aceitei caminho");
                         queue.add(new Packet(p.getDestination(), p.getSource(), 6, null));
-
-
-                        for(Map.Entry<Integer, Boolean> e : isClientStream.entrySet()) {
-                            if(e.getValue())
-                                queue.add(new Packet(p.getDestination(), p.getSource(), 11, String.valueOf(e.getKey()).getBytes(StandardCharsets.UTF_8)));
-                        }
                     }
                 }
 
