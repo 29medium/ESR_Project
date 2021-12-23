@@ -173,9 +173,6 @@ public class OttReceiverTCP implements Runnable {
                     int hops = at.getHops() + 1;
                     String msg = hops + " " + at.getSender();
                     queue.add(new Packet(ip, p.getSource(), 17, msg.getBytes(StandardCharsets.UTF_8)));
-                    String temp = at.getNeighbourTempString();
-                    if(temp!=null)
-                        queue.add(new Packet(ip, p.getSource(), 19, temp.getBytes(StandardCharsets.UTF_8)));
                 } else if (p.getType() == 17) {
                     String[] lines = new String(p.getData(), StandardCharsets.UTF_8).split(" ");
                     int hops = Integer.parseInt(lines[0]);

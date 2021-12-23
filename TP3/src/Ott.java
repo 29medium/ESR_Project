@@ -167,6 +167,9 @@ public class Ott {
         if(rp.getType() == 3) {
             for(String n : neighbours) {
                 queue.add(new Packet(ip, n, 16, null));
+                String temp = at.getNeighbourTempString();
+                if(temp!=null)
+                    queue.add(new Packet(ip, p.getSource(), 19, temp.getBytes(StandardCharsets.UTF_8)));
             }
         }
 
