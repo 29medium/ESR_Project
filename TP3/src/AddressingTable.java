@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class AddressingTable {
     private Map<String, Map<Integer, Boolean>> table;
     private final Map<Integer, Boolean> isClientStream;
-    private Set<String> neighbours;
+    private Map<String, Boolean> neighbours;
     private final String ip;
     private String sender;
     private String senderSender;
@@ -22,6 +22,7 @@ public class AddressingTable {
     public AddressingTable(int numStreams, String ip) {
         this.table = new HashMap<>();
         this.isClientStream = new HashMap<>();
+        this.neighbours = new HashMap<>();
         this.ip = ip;
         this.sender = null;
         this.senderSender = null;
@@ -36,7 +37,8 @@ public class AddressingTable {
     public void addNeighbours(Set<String> neighbours) {
         lock.lock();
         try {
-            this.neighbours = new TreeSet<>(neighbours);
+            for(String n: neighbours)
+                this.neighbours.put(n, false);
         } finally {
             lock.unlock();
         }
@@ -54,7 +56,56 @@ public class AddressingTable {
     public Set<String> getNeighbours() {
         lock.lock();
         try {
-            return new TreeSet<>(neighbours);
+            return new TreeSet<>(neighbours.keySet());
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Set<String> getNeighboursOn() {
+        lock.lock();
+        try {
+            Set<String> res = new TreeSet<>();
+            for(Map.Entry<String, Boolean> e : neighbours.entrySet())
+                if(e.getValue())
+                    res.add(e.getKey());
+            return res;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean isRoute(String ip) {
+        lock.lock();
+        try {
+            return getRoutes().contains(ip);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean isSender(String ip) {
+        lock.lock();
+        try {
+            return sender.equals(ip);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void setNeighbours(String ip, Boolean state) {
+        lock.lock();
+        try {
+            this.neighbours.put(ip, state);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean getNeighbourState(String ip) {
+        lock.lock();
+        try {
+            return this.neighbours.get(ip);
         } finally {
             lock.unlock();
         }

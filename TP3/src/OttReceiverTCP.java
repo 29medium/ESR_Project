@@ -69,7 +69,7 @@ public class OttReceiverTCP implements Runnable {
                             }
                         }
 
-                        Set<String> neighbours = at.getNeighbours();
+                        Set<String> neighbours = at.getNeighboursOn();
                         hops++;
 
                         for (String n : neighbours)
@@ -85,7 +85,7 @@ public class OttReceiverTCP implements Runnable {
                     at.removeAddress(p.getSource());
                 } else if(p.getType() == 9) {
                     Set<String> routes = at.getRoutes();
-                    Set<String> neighbours = at.getNeighbours();
+                    Set<String> neighbours = at.getNeighboursOn();
                     neighbours.remove(p.getSource());
 
                     for(String n : routes) {
