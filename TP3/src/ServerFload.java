@@ -51,6 +51,9 @@ public class ServerFload implements Runnable {
                     neighbours = at.getNeighboursOn();
                     for (String n : neighbours) {
                         queue.add(new Packet(ip, n, 13, null));
+
+                        Thread.sleep(100);
+
                         queue.add(new Packet(ip, n, 5, "1 null".getBytes(StandardCharsets.UTF_8)));
                     }
 
