@@ -80,6 +80,7 @@ public class OttReceiverTCP implements Runnable {
                             }
 
                         Set<String> neighboursTemp = at.getNeighbourTemp();
+                        System.out.println(neighboursTemp);
 
                         for (String n : neighboursTemp)
                             if (!n.equals(p.getSource())) {
@@ -160,7 +161,6 @@ public class OttReceiverTCP implements Runnable {
                     at.reset();
                 } else if (p.getType() == 14) {
                     if(p.getData()!=null) {
-                        System.out.println(new String(p.getData(), StandardCharsets.UTF_8) + "<----------------");
                         at.addNeighbourTemp(new String(p.getData(), StandardCharsets.UTF_8));
                     }
                     queue.add(new Packet(ip, at.getSender(), 14, null));
