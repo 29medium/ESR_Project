@@ -254,6 +254,7 @@ public class AddressingTable {
         try {
             this.hops = Integer.MAX_VALUE;
             this.sender = null;
+            this.senderSender = null;
             this.table = new HashMap<>();
         } finally {
             lock.unlock();

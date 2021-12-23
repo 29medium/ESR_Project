@@ -40,16 +40,20 @@ public class OttBeaconSender implements Runnable {
                                 queue.add(new Packet(ip, r, 10, null));
                             }
 
+                            String sender = at.getSender();
+                            String senderSender = at.getSenderSender();
+
                             at.reset();
 
+                            System.out.println(nei);
+
                             if(nei.isEmpty()) {
-                                String senderSender = at.getSenderSender();
                                 queue.add(new Packet(ip, senderSender, 4, null));
                                 queue.add(new Packet(ip, senderSender, 14, null));
                             } else {
                                 for (String rn : nei)
                                     queue.add(new Packet(ip, rn, 4, null));
-                                queue.add(new Packet(ip, at.getSender(), 14, null));
+                                queue.add(new Packet(ip, sender, 14, null));
                             }
                         } else if(at.isRoute(n)) {
                             at.removeAddress(n);
@@ -59,7 +63,7 @@ public class OttBeaconSender implements Runnable {
                             at.setNeighbours(n, false);
                     }
                 }
-                Thread.sleep(200);
+                Thread.sleep(400);
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }

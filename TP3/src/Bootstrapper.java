@@ -76,7 +76,7 @@ public class Bootstrapper {
             while (count_visits() < (bootstrapper.size()/2)) {
                 full.await();
             }
-            sleep(500);
+            sleep(1000);
         } finally {
             lock.unlock();
         }
