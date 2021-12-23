@@ -2,8 +2,10 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class OttReceiverTCP implements Runnable {
     private ServerSocket ss;
@@ -77,6 +79,14 @@ public class OttReceiverTCP implements Runnable {
                                 queue.add(new Packet(ip, n, 5, msg.getBytes(StandardCharsets.UTF_8)));
                             }
 
+                        Set<String> neighboursTemp = at.getNeighbourTemp();
+
+                        for (String n : neighboursTemp)
+                            if (!n.equals(p.getSource())) {
+                                String msg = hops + " " + at.getSender();
+                                queue.add(new Packet(ip, n, 5, msg.getBytes(StandardCharsets.UTF_8)));
+                            }
+
                     }
                 } else if (p.getType() == 6) {
                     at.addAddress(p.getSource());
@@ -99,7 +109,7 @@ public class OttReceiverTCP implements Runnable {
 
                     if (nei.isEmpty()) {
                         queue.add(new Packet(ip, senderSender, 4, null));
-                        queue.add(new Packet(ip, senderSender, 14, null));
+                        queue.add(new Packet(ip, senderSender, 14, ip.getBytes(StandardCharsets.UTF_8)));
                     } else {
                         for (String rn : nei)
                             queue.add(new Packet(ip, rn, 4, null));
@@ -110,6 +120,12 @@ public class OttReceiverTCP implements Runnable {
 
                     for (String n : routes) {
                         queue.add(new Packet(ip, n, 10, null));
+                    }
+
+                    Set<String> neighboursTemp = at.getNeighbourTemp();
+
+                    for (String n : neighboursTemp) {
+                        queue.add(new Packet(ip, n, 13, null));
                     }
 
                     at.reset();
@@ -135,8 +151,16 @@ public class OttReceiverTCP implements Runnable {
                         queue.add(new Packet(ip, n, 13, null));
                     }
 
+                    Set<String> neighboursTemp = at.getNeighbourTemp();
+
+                    for (String n : neighboursTemp) {
+                        queue.add(new Packet(ip, n, 13, null));
+                    }
+
                     at.reset();
                 } else if (p.getType() == 14) {
+                    if(p.getData()!=null)
+                        at.addNeighbourTemp(new String(p.getData(), StandardCharsets.UTF_8));
                     queue.add(new Packet(ip, at.getSender(), 14, null));
                 } else if (p.getType() == 15) {
                     at.ping();
@@ -149,6 +173,9 @@ public class OttReceiverTCP implements Runnable {
                     int hops = at.getHops() + 1;
                     String msg = hops + " " + at.getSender();
                     queue.add(new Packet(ip, p.getSource(), 17, msg.getBytes(StandardCharsets.UTF_8)));
+                    String temp = at.getNeighbourTempString();
+                    if(temp!=null)
+                        queue.add(new Packet(ip, p.getSource(), 19, temp.getBytes(StandardCharsets.UTF_8)));
                 } else if (p.getType() == 17) {
                     String[] lines = new String(p.getData(), StandardCharsets.UTF_8).split(" ");
                     int hops = Integer.parseInt(lines[0]);
@@ -168,6 +195,17 @@ public class OttReceiverTCP implements Runnable {
                         }
 
                         queue.add(new Packet(p.getDestination(), p.getSource(), 6, null));
+                    }
+                } else if(p.getType() == 19) {
+                    Set<String> neighbours_temp = at.getNeighbourTemp();
+                    Set<String> nei = new TreeSet<>(List.of(new String(p.getData(), StandardCharsets.UTF_8).split(",")));
+
+                    for(String n : neighbours_temp) {
+                        for(String ne : nei) {
+                            if(n.equals(ne)) {
+                                at.removeNeighbourTemp(ne);
+                            }
+                        }
                     }
                 }
 

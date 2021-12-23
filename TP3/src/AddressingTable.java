@@ -11,7 +11,8 @@ import java.util.stream.Collectors;
 public class AddressingTable {
     private Map<String, Map<Integer, Boolean>> table;
     private final Map<Integer, Boolean> isClientStream;
-    private Map<String, Boolean> neighbours;
+    private final Map<String, Boolean> neighbours;
+    private Set<String> neighbours_temp;
     private final String ip;
     private String sender;
     private String senderSender;
@@ -23,6 +24,7 @@ public class AddressingTable {
         this.table = new HashMap<>();
         this.isClientStream = new HashMap<>();
         this.neighbours = new HashMap<>();
+        this.neighbours_temp = new TreeSet<>();
         this.ip = ip;
         this.sender = null;
         this.senderSender = null;
@@ -39,6 +41,53 @@ public class AddressingTable {
         try {
             for(String n: neighbours)
                 this.neighbours.put(n, false);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void addNeighbourTemp(String ip) {
+        lock.lock();
+        try {
+            this.neighbours_temp.add(ip);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void removeNeighbourTemp(String ip) {
+        lock.lock();
+        try {
+            this.neighbours_temp.remove(ip);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Set<String> getNeighbourTemp() {
+        lock.lock();
+        try {
+            return new TreeSet<>(neighbours_temp);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public String getNeighbourTempString() {
+        lock.lock();
+        try {
+            StringBuilder res = new StringBuilder();
+            Iterator<String> it = neighbours_temp.iterator();
+
+            if(neighbours_temp.isEmpty())
+                return null;
+
+            while(it.hasNext()) {
+                res.append(it.next());
+                if(it.hasNext())
+                    res.append(",");
+            }
+            return res.toString();
         } finally {
             lock.unlock();
         }

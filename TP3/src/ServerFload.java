@@ -48,15 +48,17 @@ public class ServerFload implements Runnable {
                 if(Ott.changed) {
                     Ott.changed = false;
 
-                    neighbours = at.getNeighbours();
+                    neighbours = at.getNeighboursOn();
                     for (String n : neighbours) {
                         queue.add(new Packet(ip, n, 13, null));
+                        queue.add(new Packet(ip, n, 5, "1 null".getBytes(StandardCharsets.UTF_8)));
                     }
 
-                    Thread.sleep(100);
-
-                    for (String n : neighbours)
+                    Set<String> neighbours_temp = at.getNeighbourTemp();
+                    for (String n : neighbours_temp) {
+                        queue.add(new Packet(ip, n, 13, null));
                         queue.add(new Packet(ip, n, 5, "1 null".getBytes(StandardCharsets.UTF_8)));
+                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
