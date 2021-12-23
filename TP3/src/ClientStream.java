@@ -4,6 +4,7 @@ import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Map;
 import java.util.Set;
 
 public class ClientStream implements Runnable{
@@ -16,11 +17,11 @@ public class ClientStream implements Runnable{
     private byte[] cBuf;
 
     private AddressingTable at;
-    private RTPqueue queue;
+    private Map<Integer,RTPqueue> queueMap;
 
-    public ClientStream(AddressingTable at, RTPqueue queue) {
+    public ClientStream(AddressingTable at, Map<Integer,RTPqueue> queueMap) {
         this.at = at;
-        this.queue = queue;
+        this.queueMap = queueMap;
     }
 
     public void run() {
@@ -43,7 +44,7 @@ public class ClientStream implements Runnable{
                 }
 
                 if (at.isClientStream(rtp_packet.StreamID)) {
-                    queue.add(rtp_packet);
+                    queueMap.get(rtp_packet.StreamID).add(rtp_packet);
                 }
             }
         }

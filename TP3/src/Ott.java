@@ -15,7 +15,7 @@ public class Ott {
         if(args.length==1 && args[0].equals("-server")) {
             server(ip, ss, new Bootstrapper("../files/bootstrapper2"), new PacketQueue());
         } else if(args.length==2 && args[1].equals("-client")) {
-            client(ip, ss, args[0], new PacketQueue(), new RTPqueue());
+            client(ip, ss, args[0], new PacketQueue());
         } else if(args.length==1) {
             ott(ip, ss, args[0], new PacketQueue());
         } else {
@@ -90,12 +90,17 @@ public class Ott {
         }
     }
 
-    public static void client(String ip, ServerSocket ss, String bootstrapperIP, PacketQueue queueTCP, RTPqueue queueRTP) throws IOException {
+    public static void client(String ip, ServerSocket ss, String bootstrapperIP, PacketQueue queueTCP) throws IOException {
         AddressingTable at = neighbours(queueTCP, ip, bootstrapperIP);
+
+        Map<Integer, RTPqueue> queueMap = new HashMap<>();
+        for(int i=1; i<=at.getNumStreams(); i++)
+            queueMap.put(i, new RTPqueue());
+
 
         Thread senderTCP = new Thread(new OttSenderTCP(queueTCP));
         Thread receiverTCP = new Thread(new OttReceiverTCP(ss, at, queueTCP, ip));
-        Thread clientStream = new Thread(new ClientStream(at, queueRTP));
+        Thread clientStream = new Thread(new ClientStream(at, queueMap));
         Thread beacon = new Thread(new OttBeaconSender(at, queueTCP, ip));
 
         senderTCP.start();
@@ -116,7 +121,7 @@ public class Ott {
                     }
                     at.setClientStream(true, streamID);
 
-                    Thread display = new Thread(new ClientDisplay(at, queueRTP, queueTCP, streamID, ip));
+                    Thread display = new Thread(new ClientDisplay(at, queueMap.get(streamID), queueTCP, streamID, ip));
                     display.start();
                 }
             } else if(line.equals("exit")) {
