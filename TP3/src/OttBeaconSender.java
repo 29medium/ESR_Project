@@ -51,8 +51,8 @@ public class OttBeaconSender implements Runnable {
                             
                             if(nei.isEmpty()) {
                                 queue.add(new Packet(ip, senderSender, 4, null));
-
                                 queue.add(new Packet(ip, senderSender, 14, null));
+                                queue.add(new Packet(ip, senderSender, 20, null));
                             } else {
                                 for (String rn : nei)
                                     queue.add(new Packet(ip, rn, 4, null));

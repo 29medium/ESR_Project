@@ -80,7 +80,6 @@ public class OttReceiverTCP implements Runnable {
                             }
 
                         Set<String> neighboursTemp = at.getNeighbourTemp();
-                        System.out.println(neighboursTemp);
 
                         for (String n : neighboursTemp)
                             if (!n.equals(p.getSource())) {
