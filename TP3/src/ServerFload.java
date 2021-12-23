@@ -1,8 +1,3 @@
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +31,7 @@ public class ServerFload implements Runnable {
             queue.add(new Packet(ip, n, 5, "1 null".getBytes(StandardCharsets.UTF_8)));
 
         for(int i=1; i<=Ott.streams; i++) {
-            Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at, (i-1)*200));
+            Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at));
             serverStream.start();
         }
 

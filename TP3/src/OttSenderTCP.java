@@ -4,10 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class OttSenderTCP implements Runnable {
     private PacketQueue queue;
@@ -23,7 +19,7 @@ public class OttSenderTCP implements Runnable {
 
                 Socket s = new Socket(p.getDestination(), 8080);
                 DataOutputStream out = new DataOutputStream(s.getOutputStream());
-                DataInputStream in = new DataInputStream(new DataInputStream(s.getInputStream()));
+                DataInputStream in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
 
                 Packet.send(out, p);
 

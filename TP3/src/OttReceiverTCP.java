@@ -99,7 +99,7 @@ public class OttReceiverTCP implements Runnable {
 
                     for (String r : routes) {
                         nei.remove(r);
-                        queue.add(new Packet(ip, r, 10, null));
+                        queue.add(new Packet(ip, r, 13, null));
                     }
 
                     String sender = at.getSender();
@@ -116,14 +116,6 @@ public class OttReceiverTCP implements Runnable {
                             queue.add(new Packet(ip, rn, 4, null));
                         queue.add(new Packet(ip, sender, 14, null));
                     }
-                } else if (p.getType() == 10) {
-                    Set<String> routes = at.getRoutes();
-
-                    for (String n : routes) {
-                        queue.add(new Packet(ip, n, 10, null));
-                    }
-
-                    at.reset();
                 } else if (p.getType() == 11) {
                     int streamID = Integer.parseInt(new String(p.getData(), StandardCharsets.UTF_8));
 
@@ -191,6 +183,8 @@ public class OttReceiverTCP implements Runnable {
                             }
                         }
                     }
+
+                    queue.add(new Packet(ip, at.getSender(), 19, p.getData()));
                 } else if(p.getType() == 20) {
                     at.addNeighbourTemp(p.getSource());
                 }

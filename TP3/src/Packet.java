@@ -108,7 +108,7 @@ public class Packet {
     }
 
     public void printReceive() {
-        if(type != 14 && type != 18 && type != 19) {
+        if(type != 18) {
             String msg = "[RCVD] ";
             msg += "Type=" + type + " ";
             msg += "Source=" + source + " ";
@@ -123,13 +123,15 @@ public class Packet {
                 case 6 -> msg += "Recebi confirmação de caminho aceite";
                 case 8 -> msg += "Recebi informação de caminho substituido";
                 case 9 -> msg += "Recebi informação que o sender vai sair";
-                case 10, 13 -> msg += "Recebi informação para limpar as minhas rotas";
+                case 13 -> msg += "Recebi informação para limpar as minhas rotas";
                 case 11 -> msg += "Recebi pedido de stream " + new String(data, StandardCharsets.UTF_8);
                 case 12 -> msg += "Recebi pedido de cancelamento de stream " + new String(data, StandardCharsets.UTF_8);
                 case 14 -> msg += "Recebi pedido de informação ao servidor que o nodo vai sair";
                 case 15 -> msg += "Recebi pedido de escrita para ficheiro de log";
                 case 16 -> msg += "Recebi pedido de fload sem redirecionamento";
                 case 17 -> msg += "Recebi fload sem redirecionamento com " + new String(data, StandardCharsets.UTF_8).split(" ")[0] + "hops";
+                case 19 -> msg += "Recebi pedido para remover vizinhos temporários";
+                case 20 -> msg += "Recebi pedido para adicionar vizinhos temporários";
                 default -> {}
             }
 
@@ -138,7 +140,7 @@ public class Packet {
     }
 
     public void printSent() {
-        if(type != 14 && type != 18 && type != 19) {
+        if(type != 18) {
             String msg = "[SENT] ";
             msg += "Type=" + type + " ";
             msg += "Destionation=" + destination + " ";
@@ -153,14 +155,15 @@ public class Packet {
                 case 6 -> msg += "Enviei confirmação de caminho aceite";
                 case 8 -> msg += "Enviei informação de caminho substituido";
                 case 9 -> msg += "Enviei informação que o sender vai sair";
-                case 10, 13 -> msg += "Enviei informação para limpar as minhas rotas";
+                case 13 -> msg += "Enviei informação para limpar as minhas rotas";
                 case 11 -> msg += "Enviei pedido de stream " + new String(data, StandardCharsets.UTF_8);
                 case 12 -> msg += "Enviei pedido de cancelamento de stream " + new String(data, StandardCharsets.UTF_8);
                 case 14 -> msg += "Enviei pedido de informação ao servidor que o nodo vai sair";
                 case 15 -> msg += "Enviei pedido de escrita para ficheiro de log";
                 case 16 -> msg += "Enviei pedido de fload sem redirecionamento";
                 case 17 -> msg += "Enviei fload sem redirecionamento com " + new String(data, StandardCharsets.UTF_8).split(" ")[0] + "hops";
-                case 18 -> msg += "Enviei beacon";
+                case 19 -> msg += "Enviei pedido para remover vizinhos temporários";
+                case 20 -> msg += "Enviei pedido para adicionar vizinhos temporários";
                 default -> {
                 }
             }

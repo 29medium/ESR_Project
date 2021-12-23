@@ -1,11 +1,7 @@
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class OttBeaconSender implements Runnable {
     private AddressingTable at;
@@ -41,7 +37,7 @@ public class OttBeaconSender implements Runnable {
 
                             for(String r : routes) {
                                 nei.remove(r);
-                                queue.add(new Packet(ip, r, 10, null));
+                                queue.add(new Packet(ip, r, 13, null));
                             }
 
                             String sender = at.getSender();

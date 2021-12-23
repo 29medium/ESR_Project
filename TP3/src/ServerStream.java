@@ -36,7 +36,7 @@ public class ServerStream extends JFrame implements ActionListener {
         this.streamID = streamID;
         this.videoFileName = name;
 
-        sTimer = new Timer(FRAME_PERIOD, this); //init Timer para servidor
+        sTimer = new Timer(FRAME_PERIOD, this);
         sTimer.setInitialDelay(0);
         sTimer.setCoalesce(true);
         sBuf = new byte[15000];
