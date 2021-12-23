@@ -108,7 +108,7 @@ public class Packet {
     }
 
     public void printReceive() {
-        if(type != 14 && type != 18) {
+        if(type != 14 && type != 18 && type != 19) {
             String msg = "[RCVD] ";
             msg += "Type=" + type + " ";
             msg += "Source=" + source + " ";
@@ -138,7 +138,7 @@ public class Packet {
     }
 
     public void printSent() {
-        if(type != 14 && type != 18) {
+        if(type != 14 && type != 18 && type != 19) {
             String msg = "[SENT] ";
             msg += "Type=" + type + " ";
             msg += "Destionation=" + destination + " ";

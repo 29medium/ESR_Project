@@ -24,15 +24,14 @@ public class OttBeaconSender implements Runnable {
                 Set<String> neighbours = at.getNeighbours();
                 for(String n : neighbours) {
                     try {
-                        Socket s = new Socket(at.getSender(), 8080);
+                        Socket s = new Socket(n, 8080);
                         DataOutputStream out = new DataOutputStream(s.getOutputStream());
-                        Packet.send(out, new Packet(ip, at.getSender(), 18, null));
+                        Packet.send(out, new Packet(ip, n, 18, null));
                         Packet.receive(new DataInputStream(new BufferedInputStream(s.getInputStream())));
 
                         if (!at.getNeighbourState(n))
                             at.setNeighbours(n, true);
-                        if (n.equals("10.0.3.1"))
-                            System.out.println("Fodam se, sou mais fino que voces");
+
                         out.close();
                         s.close();
                     } catch (IOException | NegativeArraySizeException e) {
