@@ -35,7 +35,7 @@ public class OttBeaconSender implements Runnable {
                             System.out.println("Fodam se, sou mais fino que voces");
                         out.close();
                         s.close();
-                    } catch (IOException e) {
+                    } catch (IOException | NegativeArraySizeException e) {
                         if(at.isSender(n)) {
                             Set<String> routes = at.getRoutes();
                             Set<String> nei = at.getNeighboursOn();
