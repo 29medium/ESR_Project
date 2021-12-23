@@ -110,7 +110,8 @@ public class OttReceiverTCP implements Runnable {
 
                     if (nei.isEmpty()) {
                         queue.add(new Packet(ip, senderSender, 4, null));
-                        queue.add(new Packet(ip, senderSender, 14, ip.getBytes(StandardCharsets.UTF_8)));
+                        queue.add(new Packet(ip, senderSender, 14, null));
+                        queue.add(new Packet(ip, senderSender, 20, null));
                     } else {
                         for (String rn : nei)
                             queue.add(new Packet(ip, rn, 4, null));
@@ -121,12 +122,6 @@ public class OttReceiverTCP implements Runnable {
 
                     for (String n : routes) {
                         queue.add(new Packet(ip, n, 10, null));
-                    }
-
-                    Set<String> neighboursTemp = at.getNeighbourTemp();
-
-                    for (String n : neighboursTemp) {
-                        queue.add(new Packet(ip, n, 13, null));
                     }
 
                     at.reset();
@@ -152,17 +147,8 @@ public class OttReceiverTCP implements Runnable {
                         queue.add(new Packet(ip, n, 13, null));
                     }
 
-                    Set<String> neighboursTemp = at.getNeighbourTemp();
-
-                    for (String n : neighboursTemp) {
-                        queue.add(new Packet(ip, n, 13, null));
-                    }
-
                     at.reset();
                 } else if (p.getType() == 14) {
-                    if(p.getData()!=null) {
-                        at.addNeighbourTemp(new String(p.getData(), StandardCharsets.UTF_8));
-                    }
                     queue.add(new Packet(ip, at.getSender(), 14, null));
                 } else if (p.getType() == 15) {
                     at.ping();
@@ -206,6 +192,8 @@ public class OttReceiverTCP implements Runnable {
                             }
                         }
                     }
+                } else if(p.getType() == 20) {
+                    at.addNeighbourTemp(p.getSource());
                 }
 
                 in.close();
