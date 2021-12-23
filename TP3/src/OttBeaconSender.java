@@ -19,7 +19,7 @@ public class OttBeaconSender implements Runnable {
     public void run() {
         while(true) {
             try {
-                Set<String> neighbours = new TreeSet<>();
+                Set<String> neighbours = at.getNeighbours();
                 for(String n : neighbours) {
                     try {
                         Socket s = new Socket(at.getSender(), 8080);
@@ -59,7 +59,7 @@ public class OttBeaconSender implements Runnable {
                             at.setNeighbours(n, false);
                     }
                 }
-                Thread.sleep(50);
+                Thread.sleep(200);
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
