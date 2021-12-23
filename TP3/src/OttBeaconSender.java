@@ -27,6 +27,8 @@ public class OttBeaconSender implements Runnable {
                         Packet.send(out, new Packet(ip, at.getSender(), 18, null));
                         if (!at.getNeighbourState(n))
                             at.setNeighbours(n, true);
+                        if (n.equals("10.0.3.1"))
+                            System.out.println("Fodam se, sou mais fino que voces");
                         out.close();
                         s.close();
                     } catch (IOException e) {
