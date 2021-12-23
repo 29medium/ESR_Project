@@ -46,7 +46,6 @@ public class ServerFload implements Runnable {
                 Thread.sleep(20000);
 
                 if(Ott.changed) {
-                    Ott.floading = true;
                     Ott.changed = false;
 
                     neighbours = at.getNeighbours();
@@ -58,10 +57,6 @@ public class ServerFload implements Runnable {
 
                     for (String n : neighbours)
                         queue.add(new Packet(ip, n, 5, "1 null".getBytes(StandardCharsets.UTF_8)));
-
-                    Thread.sleep(100);
-
-                    Ott.floading = false;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

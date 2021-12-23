@@ -83,14 +83,13 @@ public class ServerStream extends JFrame implements ActionListener {
                 byte[] packet_bits = new byte[packet_length];
                 rtp_packet.getpacket(packet_bits);
 
-                if(Ott.floading)
-                    Thread.sleep(1000);
-
                 Set<String> streamIPs = at.getStreamIPs(streamID);
                 for(String ip : streamIPs) {
                     senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(ip), RTP_dest_port);
                     RTPsocket.send(senddp);
                 }
+
+                System.out.println("Enviei");
             }
             catch(Exception exp){
                 exp.printStackTrace();
