@@ -59,7 +59,7 @@ public class OttBeaconSender implements Runnable {
                             at.setNeighbours(n, false);
                     }
                 }
-                Thread.sleep(1000);
+                Thread.sleep(200);
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
