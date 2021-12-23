@@ -174,7 +174,6 @@ public class OttReceiverTCP implements Runnable {
                 in.close();
                 out.close();
                 s.close();
-            } catch (NullPointerException ignored) {
             } catch (IOException e) {
                 e.printStackTrace();
             }

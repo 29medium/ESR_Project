@@ -83,7 +83,7 @@ public class ServerStream extends JFrame implements ActionListener {
                 byte[] packet_bits = new byte[packet_length];
                 rtp_packet.getpacket(packet_bits);
 
-                while(Ott.floading);
+                //while(Ott.floading);
 
                 Set<String> streamIPs = at.getStreamIPs(streamID);
                 for(String ip : streamIPs) {
