@@ -85,24 +85,26 @@ public class OttReceiverTCP implements Runnable {
                     at.removeAddress(p.getSource());
                 } else if(p.getType() == 9) {
                     Set<String> routes = at.getRoutes();
-                    Set<String> neighbours = at.getNeighboursOn();
-                    neighbours.remove(p.getSource());
+                    Set<String> nei = at.getNeighboursOn();
+                    nei.remove(at.getSender());
 
-                    for(String n : routes) {
-                        neighbours.remove(n);
-                        queue.add(new Packet(ip, n, 10, null));
+                    for(String r : routes) {
+                        nei.remove(r);
+                        queue.add(new Packet(ip, r, 10, null));
                     }
+
+                    String sender = at.getSender();
+                    String senderSender = at.getSenderSender();
 
                     at.reset();
 
-                    if(neighbours.isEmpty()) {
-                        String senderSender = at.getSenderSender();
+                    if(nei.isEmpty()) {
                         queue.add(new Packet(ip, senderSender, 4, null));
                         queue.add(new Packet(ip, senderSender, 14, null));
                     } else {
-                        for (String n : neighbours)
-                            queue.add(new Packet(ip, n, 4, null));
-                        queue.add(new Packet(ip, at.getSender(), 14, null));
+                        for (String rn : nei)
+                            queue.add(new Packet(ip, rn, 4, null));
+                        queue.add(new Packet(ip, sender, 14, null));
                     }
                 } else if(p.getType() == 10) {
                     Set<String> routes = at.getRoutes();

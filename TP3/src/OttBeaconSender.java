@@ -48,9 +48,7 @@ public class OttBeaconSender implements Runnable {
                             String senderSender = at.getSenderSender();
 
                             at.reset();
-
-                            System.out.println(nei);
-
+                            
                             if(nei.isEmpty()) {
                                 queue.add(new Packet(ip, senderSender, 4, null));
                                 queue.add(new Packet(ip, senderSender, 14, null));
