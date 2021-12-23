@@ -29,7 +29,7 @@ public class OttBeaconSender implements Runnable {
                             at.setNeighbours(n, true);
                         out.close();
                         s.close();
-                    } catch (ConnectException e) {
+                    } catch (IOException e) {
                         if(at.isSender(n)) {
                             Set<String> routes = at.getRoutes();
                             Set<String> nei = at.getNeighboursOn();
@@ -64,7 +64,7 @@ public class OttBeaconSender implements Runnable {
                     }
                 }
                 Thread.sleep(400);
-            } catch (InterruptedException | IOException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
