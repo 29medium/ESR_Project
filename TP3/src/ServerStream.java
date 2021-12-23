@@ -88,8 +88,6 @@ public class ServerStream extends JFrame implements ActionListener {
                     senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(ip), RTP_dest_port);
                     RTPsocket.send(senddp);
                 }
-
-                System.out.println("Enviei");
             }
             catch(Exception exp){
                 exp.printStackTrace();

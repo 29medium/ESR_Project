@@ -36,7 +36,7 @@ public class ServerFload implements Runnable {
             queue.add(new Packet(ip, n, 5, "1 null".getBytes(StandardCharsets.UTF_8)));
 
         for(int i=1; i<=Ott.streams; i++) {
-            Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at));
+            Thread serverStream = new Thread(new ServerSenderUDP(i, movies.get(i), at, (i-1)*200));
             serverStream.start();
         }
 

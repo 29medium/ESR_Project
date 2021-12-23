@@ -80,13 +80,13 @@ public class Packet {
         System.arraycopy(arr, 0, content, 0, size);
 
         Packet p = new Packet(content);
-        //p.printReceive();
+        p.printReceive();
 
         return p;
     }
 
     public static void send(DataOutputStream out, Packet p) throws IOException {
-        //p.printSent();
+        p.printSent();
         out.write(p.toBytes());
         out.flush();
     }
