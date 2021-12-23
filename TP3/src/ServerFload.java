@@ -46,7 +46,7 @@ public class ServerFload implements Runnable {
                 Thread.sleep(20000);
 
                 if(Ott.changed) {
-                    //Ott.floading = true;
+                    Ott.floading = true;
                     Ott.changed = false;
 
                     neighbours = at.getNeighbours();
@@ -61,7 +61,7 @@ public class ServerFload implements Runnable {
 
                     Thread.sleep(100);
 
-                    //Ott.floading = false;
+                    Ott.floading = false;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
