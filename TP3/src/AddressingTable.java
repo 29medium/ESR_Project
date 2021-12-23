@@ -87,6 +87,8 @@ public class AddressingTable {
     public boolean isSender(String ip) {
         lock.lock();
         try {
+            if(sender == null)
+                return false;
             return sender.equals(ip);
         } finally {
             lock.unlock();
