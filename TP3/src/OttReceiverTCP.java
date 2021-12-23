@@ -168,8 +168,6 @@ public class OttReceiverTCP implements Runnable {
 
                         queue.add(new Packet(p.getDestination(), p.getSource(), 6, null));
                     }
-                } else if(p.getType() == 18) {
-                    Packet.send(out, new Packet(p.getSource(), p.getDestination(), 19, null));
                 }
 
                 in.close();

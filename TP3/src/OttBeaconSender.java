@@ -27,14 +27,13 @@ public class OttBeaconSender implements Runnable {
                         Socket s = new Socket(n, 8080);
                         DataOutputStream out = new DataOutputStream(s.getOutputStream());
                         Packet.send(out, new Packet(ip, n, 18, null));
-                        Packet.receive(new DataInputStream(new BufferedInputStream(s.getInputStream())));
 
                         if (!at.getNeighbourState(n))
                             at.setNeighbours(n, true);
 
                         out.close();
                         s.close();
-                    } catch (IOException | NegativeArraySizeException e) {
+                    } catch (IOException e) {
                         if(at.isSender(n)) {
                             Set<String> routes = at.getRoutes();
                             Set<String> nei = at.getNeighboursOn();
