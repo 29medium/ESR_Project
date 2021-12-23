@@ -27,7 +27,6 @@ public class ClientStream implements Runnable{
 
         try {
             RTPsocket = new DatagramSocket(RTP_RCV_PORT);
-            //RTPsocket.setSoTimeout(5000);
 
             while(true) {
                 cBuf = new byte[15000];
@@ -46,10 +45,6 @@ public class ClientStream implements Runnable{
                 if (at.isClientStream(rtp_packet.StreamID)) {
                     queue.add(rtp_packet);
                 }
-
-                //System.out.println("Got RTP packet with SeqNum # " + rtp_packet.getsequencenumber() + " TimeStamp " + rtp_packet.gettimestamp() + " ms, of type " + rtp_packet.getpayloadtype());
-
-                //rtp_packet.printheader();
             }
         }
         catch (InterruptedIOException iioe){

@@ -25,7 +25,6 @@ public class OttStream implements Runnable {
 
         try {
             RTPsocket = new DatagramSocket(RTP_RCV_PORT);
-            //RTPsocket.setSoTimeout(5000);
 
             while(true) {
                 cBuf = new byte[15000];
