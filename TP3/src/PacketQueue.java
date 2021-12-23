@@ -3,9 +3,9 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class PacketQueue {
-    private LinkedList<Packet> packets;
-    private ReentrantLock lock;
-    private Condition notEmpty;
+    private final LinkedList<Packet> packets;
+    private final ReentrantLock lock;
+    private final Condition notEmpty;
 
     public PacketQueue() {
         packets = new LinkedList<>();

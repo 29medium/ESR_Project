@@ -1,7 +1,6 @@
 import java.io.*;
 
 public class VideoStream {
-
     FileInputStream fis;
     int frame_nb;
 

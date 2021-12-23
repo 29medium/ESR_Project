@@ -1,7 +1,7 @@
 public class ServerSenderUDP implements Runnable{
-    private int streamID;
-    private String name;
-    private AddressingTable at;
+    private final int streamID;
+    private final String name;
+    private final AddressingTable at;
 
     public ServerSenderUDP(int streamID, String name, AddressingTable at) {
         this.streamID = streamID;

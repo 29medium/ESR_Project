@@ -6,15 +6,7 @@ import java.net.InetAddress;
 import java.util.Set;
 
 public class OttStream implements Runnable {
-    private DatagramPacket rcvdp;
-    private DatagramPacket senddp;
-    private DatagramSocket RTPsocket;
-    private static int RTP_RCV_PORT = 25000;
-    private int RTP_dest_port = 25000;
-
-    private byte[] cBuf;
-
-    private AddressingTable at;
+    private final AddressingTable at;
 
     public OttStream(AddressingTable at) {
         this.at = at;
@@ -23,11 +15,12 @@ public class OttStream implements Runnable {
     public void run() {
 
         try {
-            RTPsocket = new DatagramSocket(RTP_RCV_PORT);
+            int RTP_RCV_PORT = 25000;
+            DatagramSocket RTPsocket = new DatagramSocket(RTP_RCV_PORT);
 
             while(true) {
-                cBuf = new byte[15000];
-                rcvdp = new DatagramPacket(cBuf, cBuf.length);
+                byte[] cBuf = new byte[15000];
+                DatagramPacket rcvdp = new DatagramPacket(cBuf, cBuf.length);
 
                 RTPsocket.receive(rcvdp);
 
@@ -35,7 +28,8 @@ public class OttStream implements Runnable {
 
                 Set<String> streamIPs = at.getStreamIPs(rtp_packet.StreamID);
                 for (String ip : streamIPs) {
-                    senddp = new DatagramPacket(rcvdp.getData(), rcvdp.getData().length, InetAddress.getByName(ip), RTP_dest_port);
+                    int RTP_dest_port = 25000;
+                    DatagramPacket senddp = new DatagramPacket(rcvdp.getData(), rcvdp.getData().length, InetAddress.getByName(ip), RTP_dest_port);
                     RTPsocket.send(senddp);
                 }
             }

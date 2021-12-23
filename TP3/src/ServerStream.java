@@ -11,23 +11,18 @@ import java.net.InetAddress;
 import java.util.Set;
 
 public class ServerStream extends JFrame implements ActionListener {
-    private JLabel label;
-    private DatagramPacket senddp;
     private DatagramSocket RTPsocket;
-    private int RTP_dest_port = 25000;
 
     private int imagenb = 0;
     private VideoStream video;
-    private static int MJPEG_TYPE = 26;
-    private static int FRAME_PERIOD = 100;
-    private static int VIDEO_LENGTH = 500;
+    private static final int FRAME_PERIOD = 100;
 
-    private Timer sTimer;
-    private byte[] sBuf;
+    private final Timer sTimer;
+    private final byte[] sBuf;
 
-    private AddressingTable at;
-    private int streamID;
-    private String videoFileName;
+    private final AddressingTable at;
+    private final int streamID;
+    private final String videoFileName;
 
     public ServerStream(AddressingTable at, int streamID, String name) {
         super("Server");
@@ -53,7 +48,7 @@ public class ServerStream extends JFrame implements ActionListener {
                 System.exit(0);
             }});
 
-        label = new JLabel("Send frame #        ", JLabel.CENTER);
+        JLabel label = new JLabel("Send frame #        ", JLabel.CENTER);
         getContentPane().add(label, BorderLayout.CENTER);
 
         sTimer.start();
@@ -69,6 +64,7 @@ public class ServerStream extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 
+        int VIDEO_LENGTH = 500;
         if (imagenb < VIDEO_LENGTH)
         {
             imagenb++;
@@ -76,6 +72,7 @@ public class ServerStream extends JFrame implements ActionListener {
             try {
                 int image_length = video.getnextframe(sBuf);
 
+                int MJPEG_TYPE = 26;
                 RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, streamID, sBuf, image_length);
 
                 int packet_length = rtp_packet.getlength();
@@ -85,7 +82,8 @@ public class ServerStream extends JFrame implements ActionListener {
 
                 Set<String> streamIPs = at.getStreamIPs(streamID);
                 for(String ip : streamIPs) {
-                    senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(ip), RTP_dest_port);
+                    int RTP_dest_port = 25000;
+                    DatagramPacket senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(ip), RTP_dest_port);
                     RTPsocket.send(senddp);
                 }
             }

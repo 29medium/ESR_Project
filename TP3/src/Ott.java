@@ -38,7 +38,7 @@ public class Ott {
         at.addNeighbours(new TreeSet<>(List.of(bs.get(ip).split(","))));
 
         Thread senderTCP = new Thread(new ServerSenderTCP(queueTCP));
-        Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at));
+        Thread receiverTCP = new Thread(new ServerReceiverTCP(ss, bs, at, queueTCP));
         Thread serverFload = new Thread(new ServerFload(bs, at, ip, movies, queueTCP));
         Thread beacon = new Thread(new OttBeaconSender(at, queueTCP, ip));
 

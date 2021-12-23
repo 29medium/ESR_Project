@@ -3,11 +3,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class ServerFload implements Runnable {
-    private Bootstrapper bs;
-    private AddressingTable at;
-    private String ip;
-    private Map<Integer, String> movies;
-    private PacketQueue queue;
+    private final Bootstrapper bs;
+    private final AddressingTable at;
+    private final String ip;
+    private final Map<Integer, String> movies;
+    private final PacketQueue queue;
 
     public ServerFload(Bootstrapper bs, AddressingTable at, String ip, Map<Integer, String> movies, PacketQueue queue) {
         this.bs = bs;

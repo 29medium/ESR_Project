@@ -7,22 +7,20 @@ import java.awt.event.WindowEvent;
 import java.nio.charset.StandardCharsets;
 
 public class ClientDisplay implements Runnable {
-    private JFrame f = new JFrame("Cliente");
-    private JButton playButton = new JButton("Play");
-    private JButton stopButton = new JButton("Stop");
-    private JPanel mainPanel = new JPanel();
-    private JPanel buttonPanel = new JPanel();
-    private JLabel iconLabel = new JLabel();
-    private ImageIcon icon;
+    private final JFrame f = new JFrame("Cliente");
+    private final JButton playButton = new JButton("Play");
+    private final JButton stopButton = new JButton("Stop");
+    private final JPanel mainPanel = new JPanel();
+    private final JPanel buttonPanel = new JPanel();
+    private final JLabel iconLabel = new JLabel();
 
     private Timer cTimer;
-    private byte[] cBuf;
 
-    private AddressingTable at;
-    private RTPqueue queue;
-    private PacketQueue queueTCP;
-    private int streamID;
-    private String ip;
+    private final AddressingTable at;
+    private final RTPqueue queue;
+    private final PacketQueue queueTCP;
+    private final int streamID;
+    private final String ip;
 
     public ClientDisplay(AddressingTable at, RTPqueue queue, PacketQueue queueTCP, int streamID, String ip) {
         this.at = at;
@@ -61,7 +59,7 @@ public class ClientDisplay implements Runnable {
         cTimer = new Timer(20, new clientTimerListener());
         cTimer.setInitialDelay(0);
         cTimer.setCoalesce(true);
-        cBuf = new byte[15000];
+        byte[] cBuf = new byte[15000];
     }
 
     class playButtonListener implements ActionListener {
@@ -98,7 +96,7 @@ public class ClientDisplay implements Runnable {
                 Toolkit toolkit = Toolkit.getDefaultToolkit();
                 Image image = toolkit.createImage(payload, 0, payload_length);
 
-                icon = new ImageIcon(image);
+                ImageIcon icon = new ImageIcon(image);
                 iconLabel.setIcon(icon);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();

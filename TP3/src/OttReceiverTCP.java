@@ -8,10 +8,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class OttReceiverTCP implements Runnable {
-    private ServerSocket ss;
-    private AddressingTable at;
-    private PacketQueue queue;
-    private String ip;
+    private final ServerSocket ss;
+    private final AddressingTable at;
+    private final PacketQueue queue;
+    private final String ip;
 
     public OttReceiverTCP(ServerSocket ss, AddressingTable at, PacketQueue queue, String ip) {
         this.ss = ss;

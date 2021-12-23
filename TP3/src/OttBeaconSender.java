@@ -4,9 +4,9 @@ import java.net.Socket;
 import java.util.Set;
 
 public class OttBeaconSender implements Runnable {
-    private AddressingTable at;
-    private PacketQueue queue;
-    private String ip;
+    private final AddressingTable at;
+    private final PacketQueue queue;
+    private final String ip;
 
     public OttBeaconSender(AddressingTable at, PacketQueue queue, String ip) {
         this.at = at;

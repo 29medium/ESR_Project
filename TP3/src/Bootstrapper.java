@@ -6,12 +6,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import static java.lang.Thread.sleep;
 
 public class Bootstrapper {
-    private Map<String, BootstrapperCollumn> bootstrapper;
-    private ReentrantLock lock;
-    private Condition full;
+    private final Map<String, BootstrapperCollumn> bootstrapper;
+    private final ReentrantLock lock;
+    private final Condition full;
 
     static class BootstrapperCollumn {
-        private Set<String> neighbours;
+        private final Set<String> neighbours;
         private boolean visited;
 
         BootstrapperCollumn(Set<String> neighbours) {

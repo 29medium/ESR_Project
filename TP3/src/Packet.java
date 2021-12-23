@@ -7,10 +7,10 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 public class Packet {
-    private String source;
-    private String destination;
-    private int type;
-    private byte[] data;
+    private final String source;
+    private final String destination;
+    private final int type;
+    private final byte[] data;
 
     public Packet(String source, String destination, int type, byte[] data) {
         this.source = source;

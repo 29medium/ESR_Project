@@ -6,7 +6,7 @@ import java.net.ConnectException;
 import java.net.Socket;
 
 public class OttSenderTCP implements Runnable {
-    private PacketQueue queue;
+    private final PacketQueue queue;
 
     public OttSenderTCP(PacketQueue queue) {
         this.queue = queue;
