@@ -1,3 +1,5 @@
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
@@ -25,6 +27,8 @@ public class OttBeaconSender implements Runnable {
                         Socket s = new Socket(at.getSender(), 8080);
                         DataOutputStream out = new DataOutputStream(s.getOutputStream());
                         Packet.send(out, new Packet(ip, at.getSender(), 18, null));
+                        Packet.receive(new DataInputStream(new BufferedInputStream(s.getInputStream())));
+
                         if (!at.getNeighbourState(n))
                             at.setNeighbours(n, true);
                         if (n.equals("10.0.3.1"))
