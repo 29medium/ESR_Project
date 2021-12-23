@@ -34,9 +34,9 @@ public class ServerReceiverTCP implements Runnable{
                 if(p.getType() == 1) {
                     String data = Ott.streams + " " + bs.get(p.getSource());
                     if (!Ott.isON) {
-                        queue.add(new Packet(p.getDestination(), p.getSource(), 2, data.getBytes(StandardCharsets.UTF_8)));
+                        Packet.send(out, new Packet(p.getDestination(), p.getSource(), 2, data.getBytes(StandardCharsets.UTF_8)));
                     } else {
-                        queue.add(new Packet(p.getDestination(), p.getSource(), 3, data.getBytes(StandardCharsets.UTF_8)));
+                        Packet.send(out, new Packet(p.getDestination(), p.getSource(), 3, data.getBytes(StandardCharsets.UTF_8)));
                         Ott.changed = true;
                     }
 
